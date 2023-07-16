@@ -1,0 +1,571 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
+
+
+import javax.swing.*;
+
+
+public class Full {
+
+	public static void main(String[] args) {
+		new Game();
+
+	}
+
+}
+
+
+class Game implements Runnable{
+	
+	private JFrame frame;
+	private GamePanel gp;
+	
+	public Game()
+	{
+		gp = new GamePanel(this);
+		frame = new JFrame();		
+        frame.add(gp);
+        frame.pack();
+        frame.setSize(Constants.panelWidth, Constants.panelWidth);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Thread drawy = new Thread(this);
+		drawy.start();
+	}
+
+	
+	@Override
+	public void run() {
+		while (true)
+		{
+			gp.update();
+			gp.repaint();
+			
+		}
+	}
+}
+
+class Tank {
+	// going to make tanks, turn off static and pass tank object to moveaction
+	private double x;
+	private double y;
+	private double cenX;
+	private double cenY;
+	private int CircleR;
+	private boolean horizontal;
+	private double rotationAngle;
+	public boolean noLeft;
+	public boolean noRight;
+	public boolean noUp;
+	public boolean noDown;
+	private int hp;
+
+    public Tank()
+    {
+        x = 10;
+        y = 10;
+        CircleR = 30;
+        horizontal = true;
+        rotationAngle = Math.toRadians(45);
+		hp = 400;
+    }
+    public void horz()
+	{
+		horizontal = !horizontal;
+		int holder = Constants.tankHeight;
+		Constants.tankHeight = Constants.tankWidth;
+		Constants.tankWidth = holder;
+		if (horizontal)
+		{
+			x-=Constants.tankWidth/4;
+			y+=Constants.tankHeight/4;
+		}
+		else
+		{
+			x+=Constants.tankWidth/4;
+			y-=Constants.tankHeight/4;
+		}
+	}
+
+    public void update()
+    {
+        cenX = x + Constants.tankWidth/2;
+		cenY = y + Constants.tankHeight/2;
+		Point loc = MouseInfo.getPointerInfo().getLocation();
+		int endx = (int)cenX;
+		int endy = (int)cenY;
+		noUp = false;
+		noDown = false;
+		noLeft = false;
+		noRight = false;
+		rotationAngle = Math.atan2(endy-loc.y, endx-loc.x) -0.05;
+		if (cenX >= Constants.panelWidth)
+		{
+			noRight = true;
+			x = Constants.panelWidth - Constants.tankWidth/2 -1;
+		}
+		if (cenX <= 0)
+		{
+			noLeft = true;
+			x = 1 - Constants.tankWidth/2;
+		}
+		if (cenY >= Constants.panelHeight)
+		{
+			noDown = true;
+			y = Constants.panelHeight - Constants.tankHeight/2 - 1;
+		}
+		if (cenY <= 0)
+		{
+			noUp = true;
+			y = 1 - Constants.tankHeight/2;
+		}
+    }
+
+    public void draw(Graphics g1)
+    {
+        Graphics2D g = (Graphics2D) g1;
+		g.setColor(Color.black);
+		g.drawRect((int) x, (int) y, Constants.tankWidth, Constants.tankHeight);
+		g.fillOval((int) x + Constants.tankWidth / 2 - CircleR / 2, (int) y + Constants.tankHeight / 2 - CircleR / 2, CircleR,
+				CircleR);
+
+		int cx = (int)cenX;
+		int cy = (int)cenY;
+		int x1 = (int) cx - 100;
+		int y1 = (int) y + Constants.tankHeight / 2 - 5;
+		Point center = new Point(cx, cy);
+		Point one = rotate(new Point(x1, y1 + 5), center);
+		Point two = rotate(new Point(x1+1, y1 - 5), center);
+		Point three = rotate(new Point(cx, cy - 5), center);
+		Point four = rotate(new Point(cx, cy + 5), center);
+		g.drawOval(cx, cy, 2, 2);
+		int[] xarr = { one.x, two.x, three.x, four.x };
+		int[] yarr = { one.y, two.y, three.y, four.y };
+		g.fillPolygon(xarr, yarr, 4);
+    }
+
+    public Point rotate(Point p, Point c) {
+		int x1 = p.x;
+		int y1 = p.y;
+		int cx = c.x;
+		int cy = c.y;
+		int dx = x1 - cx;
+		int dy = y1 - cy;
+		x1 = cx + (int) (dx * Math.cos(rotationAngle) - dy * Math.sin(rotationAngle));
+		y1 = cy + (int) (dx * Math.sin(rotationAngle) + dy * Math.cos(rotationAngle));
+		return new Point(x1, y1);
+
+	}
+
+    public boolean getHor()
+    {
+        return horizontal;
+    }
+
+    public void setHor(boolean b)
+    {
+        horizontal = b;
+    }
+
+    public double getCX()
+    {
+        return cenX;
+    }
+    public double getCY()
+    {
+        return cenY;
+    }
+    public double getX()
+    {
+        return x;
+    }
+    public double getY()
+    {
+        return y;
+    }
+    public void setX(double x)
+    {
+        this.x = x;
+    }
+    public void setY(double y)
+    {
+        this.y = y;
+    }
+    public double getAngle()
+    {
+        return rotationAngle;
+    }
+    public void setAngle(double Angle)
+    {
+        this.rotationAngle = Angle;
+    }
+	public int getHP()
+    {
+        return hp;
+    }
+    public void setHP(int h)
+    {
+        this.hp = h;
+    }
+}
+
+
+class Shell extends Actor{
+	public Shell(double x, double y, double angle, double d)
+	{
+		super(x, y, angle, 1);
+	}
+	
+	public void update()
+	{
+		if (x >= Constants.panelWidth)
+			gone = true;
+		if (x <= 0)
+			gone = true;
+		if (y >= Constants.panelHeight)
+			gone = true;
+		if (y <= 0)
+			gone = true;
+		endTime = System.currentTimeMillis();
+		if (!gone && endTime-startTime > 50)
+		{
+			//System.out.println(x);
+			x -= speed*Math.cos(angle);
+			y -= speed*Math.sin(angle);
+			startTime = System.currentTimeMillis();
+		}
+		
+	}
+	
+	public void draw(Graphics g)
+	{
+		g.fillOval(x, y, Constants.shellSize, Constants.shellSize);
+	}
+
+    public double getRadius()
+    {
+        return Constants.shellSize;
+    }
+}
+
+class Enemy extends Actor{
+    private int radius;
+    private int hp;
+    private int speed;
+    private double endTime;
+    public Enemy(int r, int h, int x, int y, int s, double rA)
+    {
+        super(x, y, rA, Constants.enemyHealth);
+        radius = r;
+        hp = h;
+        speed = s;
+    }
+
+    public void update()
+    {
+
+        if (hp <= 0) gone = true;
+        if (x >= Constants.panelWidth)
+			gone = true;
+		if (x <= 0)
+			gone = true;
+		if (y >= Constants.panelHeight)
+			gone = true;
+		if (y <= 0)
+			gone = true;
+		endTime = System.currentTimeMillis();
+		if (!gone && endTime-startTime > 50)
+		{
+			x -= speed*Math.cos(angle);
+			y -= speed*Math.sin(angle);
+			startTime = System.currentTimeMillis();
+		}
+    }
+
+    public void draw(Graphics g)
+    {
+        g.fillRect(x, y, radius, radius);
+    }
+
+    public double getRadius()
+    {
+        return radius;
+    }
+}
+
+class Constants {
+	public static final int enemyHealth = 0;
+	public static double shellSpeed = 30;
+	public static int tankWidth  = 170;
+	public static int tankHeight = 100;
+	public static int tankSpeed = 10;
+	public static int shellSize = 10;
+	public static int panelHeight = 800;
+	public static int panelWidth = 800;
+	public static int shellHealth;
+}
+
+abstract class Actor {
+    protected int x;
+	protected int y;
+	protected double angle;
+	protected double speed;
+	public boolean gone;
+	protected double startTime;
+	protected double endTime;
+
+    public Actor(double x, double y, double angle, int h)
+    {
+        gone = false;
+		this.x = (int)x;
+		this.y = (int)y;
+		this.angle = angle;
+		speed = Constants.shellSpeed;
+		startTime = System.currentTimeMillis();
+    }
+
+    public Actor(int x2, int y2, int h, double rA) {
+    }
+
+    public void update()
+    {
+
+    }
+
+    public void draw(Graphics g)
+    {
+
+    }
+
+    public boolean intersects(Actor a)
+    {
+        Ellipse2D.Double th = new Ellipse2D.Double(x, y, Constants.shellSize, Constants.shellSize);
+        Rectangle a2 = new Rectangle((int)a.getX(), (int)a.getY(), (int)a.getRadius(), (int)a.getRadius());
+        if (th.intersects(a2)){
+            return true;
+        }
+        
+        return false;
+    }
+
+    public double getX()
+    {
+        return x;
+    }
+    public double getY()
+    {
+        return y;
+    }
+    public abstract double getRadius();
+    public void setX(int x)
+    {
+        this.x = x;
+    }
+    public void setY(int y)
+    {
+        this.y = y;
+    }
+
+    public int getHP() {
+        return 0;
+    }
+
+    public void setHP(int i) {
+    }
+}
+
+@SuppressWarnings("serial")
+class GamePanel extends JPanel {
+
+	protected static ArrayList<Actor> actors = new ArrayList<>();
+	protected static Tank tank;
+	private boolean addShell = false;
+	private boolean addEnemy = false;
+
+	public void update() {
+		tank.update();
+		actors.removeIf(s -> s.gone == true);
+		for (Actor s: actors)
+		{
+			s.update();
+		}
+		if (addShell)
+		{
+			int x1 = (int) (tank.getCX() - 100);
+			int y1 = (int) (tank.getY() + Constants.tankHeight / 2 - 5);
+			Point center = new Point((int) tank.getCX(), (int) tank.getCY());
+			Point one = tank.rotate(new Point(x1, y1), center);
+			actors.add(new Shell(one.x, one.y, Constants.shellHealth, tank.getAngle()));
+			addShell = false;
+		}
+		if (Math.random() < 0.00001)
+		{
+			double rA;
+			int x;
+			int y;
+			int r = (int) (Math.random() * 25) + 100;
+			int speed = (int) (25 / (Math.random() * r)) + 4;
+			double g = Math.random();
+			if (g < 0.25) {
+				x = (int) (Math.random() * Constants.panelWidth);
+				y = 10;
+				if (x > Constants.panelWidth / 2)
+					rA = Math.random() * (-Math.PI / 2);
+				else
+					rA = Math.random() * (Math.PI / 2) + Math.PI;
+			} else if (g < 0.5) {
+				y = (int) (Math.random() * Constants.panelHeight);
+				x = 10;
+				if (y < Constants.panelHeight / 2)
+					rA = Math.random() * (Math.PI / 2) + Math.PI;
+				else
+					rA = Math.random() * (-Math.PI / 2) + Math.PI;
+			} else if (g < 0.75) {
+				x = (int) (Math.random() * Constants.panelWidth);
+				y = Constants.panelHeight - 10;
+				if (x < Constants.panelWidth / 2)
+					rA = Math.random() * (-Math.PI / 4) + Math.PI / 2;
+				else
+					rA = Math.random() * (Math.PI / 4);
+			} else {
+				y = (int) (Math.random() * Constants.panelHeight);
+				x = Constants.panelWidth - 10;
+				if (y < Constants.panelHeight / 2)
+					rA = Math.random() * (-Math.PI / 4);
+				else
+					rA = Math.random() * (Math.PI / 4);
+			}
+			actors.add(new Enemy(r, 10, x, y, speed, rA));
+		}
+		for (Actor s: actors)
+			if (s.getClass().getSimpleName().equals("Shell"))
+				for (Actor a: actors)
+					if (a.getClass().getSimpleName().equals("Enemy"))
+						 if (s.intersects(a)) 
+						 {
+							s.gone = true;
+							a.gone = true;
+						}
+	}
+
+	public GamePanel(Game game) {
+		tank = new Tank();
+		setSize(Constants.panelHeight, Constants.panelWidth);
+		this.getInputMap().put(KeyStroke.getKeyStroke("UP"), "UP");
+		this.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "DOWN");
+		this.getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "LEFT");
+		this.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "RIGHT");
+		this.getInputMap().put(KeyStroke.getKeyStroke("W"), "UP");
+		this.getInputMap().put(KeyStroke.getKeyStroke("S"), "DOWN");
+		this.getInputMap().put(KeyStroke.getKeyStroke("A"), "LEFT");
+		this.getInputMap().put(KeyStroke.getKeyStroke("D"), "RIGHT");
+		//this.getInputMap().put(KeyStroke.getKeyStroke("Q"), "SHOOT");
+		this.getActionMap().put("UP", new MoveAction("UP", 1));
+		this.getActionMap().put("DOWN", new MoveAction("DOWN", 1));
+		this.getActionMap().put("LEFT", new MoveAction("LEFT", 1));
+		this.getActionMap().put("RIGHT", new MoveAction("RIGHT", 1));
+		this.getActionMap().put("ROTATE", new MoveAction("ROTATE", 1));
+		//this.getActionMap().put("SHOOT", new MoveAction("SHOOT", 1));
+		setFocusable(true);
+		setVisible(true);
+
+		addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent me) {
+				addShell = true;
+			}
+		});
+
+	}
+
+	@Override
+	public void paintComponent(Graphics g1) {
+		super.paintComponent(g1);
+		for (Actor s : actors) {
+			s.draw(g1);
+		}
+		tank.draw(g1);
+		Constants.panelHeight = this.getHeight();
+		Constants.panelWidth = this.getWidth();
+	}
+
+}
+
+@SuppressWarnings("serial")
+class MoveAction extends AbstractAction {
+	private String direction;
+	private int player;
+
+	MoveAction(String direction, int player) {
+
+		this.direction = direction;
+		this.player = player;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		double xt = GamePanel.tank.getX();
+		double yt = GamePanel.tank.getY();
+		if (direction.equals("UP") && !GamePanel.tank.noUp) {
+			GamePanel.tank.setY(yt - Constants.tankSpeed);
+			if (GamePanel.tank.getHor())
+				GamePanel.tank.horz();
+		}
+		if (direction.equals("DOWN") && !GamePanel.tank.noDown) {
+			GamePanel.tank.setY(yt + Constants.tankSpeed);
+			if (GamePanel.tank.getHor())
+				GamePanel.tank.horz();
+		}
+		if (direction.equals("LEFT") && !GamePanel.tank.noLeft) {
+			GamePanel.tank.setX(xt - Constants.tankSpeed);
+			if (!GamePanel.tank.getHor())
+				GamePanel.tank.horz();
+		}
+		if (direction.equals("RIGHT") && !GamePanel.tank.noRight) {
+			GamePanel.tank.setX(xt + Constants.tankSpeed);
+			if (!GamePanel.tank.getHor())
+				GamePanel.tank.horz();
+		}
+		if (direction.equals("ROTATE"))
+			GamePanel.tank.setAngle(GamePanel.tank.getAngle() + 0.1);
+		// if (direction.equals("SHOOT")) {
+		// 	double rA;
+		// 	int x;
+		// 	int y;
+		// 	int r = (int) (Math.random() * 25) + 100;
+		// 	int speed = (int) (25 / (Math.random() * r)) + 4;
+		// 	double g = Math.random();
+		// 	if (g < 0.25) {
+		// 		x = (int) (Math.random() * Constants.panelWidth);
+		// 		y = 10;
+		// 		if (x > Constants.panelWidth / 2)
+		// 			rA = Math.random() * (-Math.PI / 2);
+		// 		else
+		// 			rA = Math.random() * (Math.PI / 2) + Math.PI;
+		// 	} else if (g < 0.5) {
+		// 		y = (int) (Math.random() * Constants.panelHeight);
+		// 		x = 10;
+		// 		if (y < Constants.panelHeight / 2)
+		// 			rA = Math.random() * (Math.PI / 2) + Math.PI;
+		// 		else
+		// 			rA = Math.random() * (-Math.PI / 2) + Math.PI;
+		// 	} else if (g < 0.75) {
+		// 		x = (int) (Math.random() * Constants.panelWidth);
+		// 		y = Constants.panelHeight - 10;
+		// 		if (x < Constants.panelWidth / 2)
+		// 			rA = Math.random() * (-Math.PI / 4) + Math.PI / 2;
+		// 		else
+		// 			rA = Math.random() * (Math.PI / 4);
+		// 	} else {
+		// 		y = (int) (Math.random() * Constants.panelHeight);
+		// 		x = Constants.panelWidth - 10;
+		// 		if (y < Constants.panelHeight / 2)
+		// 			rA = Math.random() * (-Math.PI / 4);
+		// 		else
+		// 			rA = Math.random() * (Math.PI / 4);
+		// 	}
+		// 	GamePanel.actors.add(new Enemy(r, 10, x, y, speed, rA));
+		// }
+	}
+}
