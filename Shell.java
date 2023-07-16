@@ -2,9 +2,9 @@
 import java.awt.Graphics;
 
 public class Shell extends Actor{
-	public Shell(double x, double y, double angle)
+	public Shell(double x, double y, double angle, int hp)
 	{
-		super(x, y, angle);
+		super(x, y, angle, hp);
 	}
 	
 	public void update()
@@ -33,7 +33,7 @@ public class Shell extends Actor{
 		g.fillOval(x, y, Constants.shellSize, Constants.shellSize);
 	}
 
-	public int getRadius()
+	public double getRadius()
 	{
 		return Constants.shellSize;
 	}

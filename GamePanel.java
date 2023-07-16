@@ -29,7 +29,7 @@ public class GamePanel extends JPanel {
 			int y1 = (int) (tank.getY() + Constants.tankHeight / 2 - 5);
 			Point center = new Point((int) tank.getCX(), (int) tank.getCY());
 			Point one = tank.rotate(new Point(x1, y1), center);
-			actors.add(new Shell(one.x, one.y, tank.getAngle()));
+			actors.add(new Shell(one.x, one.y, tank.getAngle(), Constants.shellHP));
 			addShell = false;
 		}
 		altered = false;
@@ -70,7 +70,9 @@ public class GamePanel extends JPanel {
 				else
 					rA = Math.random() * (Math.PI / 4);
 			}
-			actors.add(new Enemy(r, 10, x, y, speed, rA));
+			altered = true;
+			actors.add(new Enemy(r, Constants.enemyHP, x, y, speed, rA));
+			altered = false;
 		}
 		for (Actor s: actors)
 			if (s.getClass().getSimpleName().equals("Shell"))
@@ -79,7 +81,9 @@ public class GamePanel extends JPanel {
 						 if (s.intersects(a)) 
 						 {
 							s.gone = true;
-							a.gone = true;
+							altered = true;
+							a.hp -= 50;
+							altered = false;
 						}
 	}
 

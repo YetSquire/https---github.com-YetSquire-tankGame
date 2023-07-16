@@ -7,4 +7,6 @@ public class Constants {
 	public static int shellSize = 10;
 	public static int panelHeight = 800;
 	public static int panelWidth = 800;
+	public static int shellHP = 1;
+	public static int enemyHP = 100;
 }
