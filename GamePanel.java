@@ -7,16 +7,15 @@ import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel {
-
 	protected static ArrayList<Actor> actors = new ArrayList<>();
 	protected static Tank tank;
 	private boolean addShell = false;
+	private boolean exit = false;
 	protected static boolean altered = false;
 
 	public void update(JLabel jlabel) {
-		tank = (Tank)actors.get(0);
 
-		jlabel.setText("Health " + tank.getHP());
+		jlabel.setText("Health " + actors.get(0).hp);
 		altered = true;
 		actors.removeIf(s -> s.gone == true);
 		for (Actor s: actors)
@@ -27,11 +26,11 @@ public class GamePanel extends JPanel {
 		if (addShell)
 		{
 			altered = true;
-			int x1 = (int) (tank.getCX() - 100);
-			int y1 = (int) (tank.getY() + Constants.tankHeight / 2 - 5);
-			Point center = new Point((int) tank.getCX(), (int) tank.getCY());
-			Point one = tank.rotate(new Point(x1, y1), center);
-			actors.add(new Shell(one.x, one.y, tank.getAngle(), Constants.shellHP));
+			int x1 = (int) (((Tank)actors.get(0)).getCX() - 100);
+			int y1 = (int) (actors.get(0).getY() + Constants.tankHeight / 2 - 5);
+			Point center = new Point((int)((Tank)actors.get(0)).getCX(), (int) ((Tank)actors.get(0)).getCY());
+			Point one = ((Tank)actors.get(0)).rotate(new Point(x1, y1), center);
+			actors.add(new Shell(one.x, one.y, actors.get(0).angle, Constants.shellHP));
 			addShell = false;
 		}
 		altered = false;
@@ -76,7 +75,7 @@ public class GamePanel extends JPanel {
 			actors.add(new Enemy(r, Constants.enemyHP, x, y, speed, rA));
 			altered = false;
 		}
-		//System.out.println(tank.getHP());
+		//System.out.println(actors.get(0).getHP());
 		for (Actor s: actors)
 			if (s.getClass().getSimpleName().equals("Shell") || s.getClass().getSimpleName().equals("Tank"))
 				for (Actor a: actors)
@@ -84,14 +83,12 @@ public class GamePanel extends JPanel {
 						 if (s.intersects(a)) 
 						 {
 							altered = true;
-							s.hp -= 50;
 							a.hp -= 50;
-						
+							s.hp -= 10;
 							altered = false;
-							System.out.println("a" + a.hp);
 
 						}
-					
+		if (actors.get(0).hp <= 0) exit = true;
 	}
 
 	public GamePanel(Game game) {
@@ -137,6 +134,11 @@ public class GamePanel extends JPanel {
 		Constants.panelWidth = this.getWidth();
 	}
 
+	public boolean checkExit()
+	{
+		return exit;
+	}
+
 }
 
 @SuppressWarnings("serial")
@@ -152,31 +154,31 @@ class MoveAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		double xt = GamePanel.tank.getX();
-		double yt = GamePanel.tank.getY();
+		int xt = GamePanel.actors.get(0).getX();
+		int yt = GamePanel.actors.get(0).getY();
 		GamePanel.altered = true;
-		if (direction.equals("UP") && !GamePanel.tank.noUp) {
-			GamePanel.tank.setY(yt - Constants.tankSpeed);
-			if (GamePanel.tank.getHor())
-				GamePanel.tank.horz();
+		if (direction.equals("UP") && !((Tank)GamePanel.actors.get(0)).noUp) {
+			GamePanel.actors.get(0).y = (yt - Constants.tankSpeed);
+			if (((Tank)GamePanel.actors.get(0)).getHor())
+				((Tank)GamePanel.actors.get(0)).horz();
 		}
-		if (direction.equals("DOWN") && !GamePanel.tank.noDown) {
-			GamePanel.tank.setY(yt + Constants.tankSpeed);
-			if (GamePanel.tank.getHor())
-				GamePanel.tank.horz();
+		if (direction.equals("DOWN") && !((Tank)GamePanel.actors.get(0)).noDown) {
+			GamePanel.actors.get(0).setY(yt + Constants.tankSpeed);
+			if (((Tank)GamePanel.actors.get(0)).getHor())
+				((Tank)GamePanel.actors.get(0)).horz();
 		}
-		if (direction.equals("LEFT") && !GamePanel.tank.noLeft) {
-			GamePanel.tank.setX(xt - Constants.tankSpeed);
-			if (!GamePanel.tank.getHor())
-				GamePanel.tank.horz();
+		if (direction.equals("LEFT") && !((Tank)GamePanel.actors.get(0)).noLeft) {
+			GamePanel.actors.get(0).setX(xt - Constants.tankSpeed);
+			if (!((Tank)GamePanel.actors.get(0)).getHor())
+				((Tank)GamePanel.actors.get(0)).horz();
 		}
-		if (direction.equals("RIGHT") && !GamePanel.tank.noRight) {
-			GamePanel.tank.setX(xt + Constants.tankSpeed);
-			if (!GamePanel.tank.getHor())
-				GamePanel.tank.horz();
+		if (direction.equals("RIGHT") && !((Tank)GamePanel.actors.get(0)).noRight) {
+			GamePanel.actors.get(0).setX(xt + Constants.tankSpeed);
+			if (!((Tank)GamePanel.actors.get(0)).getHor())
+				((Tank)GamePanel.actors.get(0)).horz();
 		}
 		if (direction.equals("ROTATE"))
-			GamePanel.tank.setAngle(GamePanel.tank.getAngle() + 0.1);
+			GamePanel.actors.get(0).angle = (GamePanel.actors.get(0).angle + 0.1);
 
 		GamePanel.altered = false;
 		// if (direction.equals("SHOOT")) {

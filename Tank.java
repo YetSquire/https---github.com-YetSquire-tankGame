@@ -42,7 +42,7 @@ public class Tank extends Actor{
 
     public void update()
     {
-		//if (hp <= 0) gone = true;;
+		if (hp <= 0) gone = true;
         cenX = x + Constants.tankWidth/2;
 		cenY = y + Constants.tankHeight/2;
 		Point loc = MouseInfo.getPointerInfo().getLocation();
