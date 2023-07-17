@@ -9,7 +9,6 @@ public class Enemy extends Actor{
         super(x, y, rA, h);
         radius = r;
         speed = s;
-        System.out.println(hp);
     }
 
     public void update()

@@ -11,11 +11,13 @@ public class GamePanel extends JPanel {
 	protected static ArrayList<Actor> actors = new ArrayList<>();
 	protected static Tank tank;
 	private boolean addShell = false;
-	private boolean altered = false;
+	protected static boolean altered = false;
 
-	public void update() {
+	public void update(JLabel jlabel) {
+		tank = (Tank)actors.get(0);
+
+		jlabel.setText("Health " + tank.getHP());
 		altered = true;
-		tank.update();
 		actors.removeIf(s -> s.gone == true);
 		for (Actor s: actors)
 		{
@@ -33,7 +35,7 @@ public class GamePanel extends JPanel {
 			addShell = false;
 		}
 		altered = false;
-		if (Math.random() < 0.00001)
+		if (Math.random() < 0.00001 && actors.size() < 50)
 		{
 			double rA;
 			int x;
@@ -74,21 +76,27 @@ public class GamePanel extends JPanel {
 			actors.add(new Enemy(r, Constants.enemyHP, x, y, speed, rA));
 			altered = false;
 		}
+		//System.out.println(tank.getHP());
 		for (Actor s: actors)
-			if (s.getClass().getSimpleName().equals("Shell"))
+			if (s.getClass().getSimpleName().equals("Shell") || s.getClass().getSimpleName().equals("Tank"))
 				for (Actor a: actors)
 					if (a.getClass().getSimpleName().equals("Enemy"))
 						 if (s.intersects(a)) 
 						 {
-							s.gone = true;
 							altered = true;
+							s.hp -= 50;
 							a.hp -= 50;
+						
 							altered = false;
+							System.out.println("a" + a.hp);
+
 						}
+					
 	}
 
 	public GamePanel(Game game) {
-		tank = new Tank();
+		tank = new Tank(Constants.panelWidth/2, Constants.panelHeight/2, Math.toRadians(45), Constants.tankHP);
+		actors.add(tank);
 		setSize(Constants.panelHeight, Constants.panelWidth);
 		this.getInputMap().put(KeyStroke.getKeyStroke("UP"), "UP");
 		this.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "DOWN");
@@ -124,7 +132,6 @@ public class GamePanel extends JPanel {
 		for (Actor s : actors) {
 			s.draw(g1);
 		}
-		tank.draw(g1);
 		}
 		Constants.panelHeight = this.getHeight();
 		Constants.panelWidth = this.getWidth();
@@ -147,6 +154,7 @@ class MoveAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		double xt = GamePanel.tank.getX();
 		double yt = GamePanel.tank.getY();
+		GamePanel.altered = true;
 		if (direction.equals("UP") && !GamePanel.tank.noUp) {
 			GamePanel.tank.setY(yt - Constants.tankSpeed);
 			if (GamePanel.tank.getHor())
@@ -169,6 +177,8 @@ class MoveAction extends AbstractAction {
 		}
 		if (direction.equals("ROTATE"))
 			GamePanel.tank.setAngle(GamePanel.tank.getAngle() + 0.1);
+
+		GamePanel.altered = false;
 		// if (direction.equals("SHOOT")) {
 		// 	double rA;
 		// 	int x;

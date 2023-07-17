@@ -3,30 +3,24 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.Rectangle;
 
-public class Tank {
+public class Tank extends Actor{
 	// going to make tanks, turn off static and pass tank object to moveaction
-	private double x;
-	private double y;
 	private double cenX;
 	private double cenY;
 	private int CircleR;
 	private boolean horizontal;
-	private double rotationAngle;
 	public boolean noLeft;
 	public boolean noRight;
 	public boolean noUp;
 	public boolean noDown;
-	private int hp;
 
-    public Tank()
+    public Tank(int x, int y, double angle, int hp)
     {
-        x = 10;
-        y = 10;
-        CircleR = 30;
+		super(x, y, angle, hp);
+		CircleR = 30;
         horizontal = true;
-        rotationAngle = Math.toRadians(45);
-		hp = 400;
     }
     public void horz()
 	{
@@ -48,6 +42,7 @@ public class Tank {
 
     public void update()
     {
+		//if (hp <= 0) gone = true;;
         cenX = x + Constants.tankWidth/2;
 		cenY = y + Constants.tankHeight/2;
 		Point loc = MouseInfo.getPointerInfo().getLocation();
@@ -57,7 +52,7 @@ public class Tank {
 		noDown = false;
 		noLeft = false;
 		noRight = false;
-		rotationAngle = Math.atan2(endy-loc.y, endx-loc.x) -0.05;
+		angle = Math.atan2(endy-loc.y, endx-loc.x) -0.05;
 		if (cenX >= Constants.panelWidth)
 		{
 			noRight = true;
@@ -110,12 +105,16 @@ public class Tank {
 		int cy = c.y;
 		int dx = x1 - cx;
 		int dy = y1 - cy;
-		x1 = cx + (int) (dx * Math.cos(rotationAngle) - dy * Math.sin(rotationAngle));
-		y1 = cy + (int) (dx * Math.sin(rotationAngle) + dy * Math.cos(rotationAngle));
+		x1 = cx + (int) (dx * Math.cos(angle) - dy * Math.sin(angle));
+		y1 = cy + (int) (dx * Math.sin(angle) + dy * Math.cos(angle));
 		return new Point(x1, y1);
 
 	}
-
+	
+	public double getRadius()
+	{
+		return -1;
+	}
     public boolean getHor()
     {
         return horizontal;
@@ -134,36 +133,15 @@ public class Tank {
     {
         return cenY;
     }
-    public double getX()
+
+	public boolean intersects(Actor a)
     {
-        return x;
-    }
-    public double getY()
-    {
-        return y;
-    }
-    public void setX(double x)
-    {
-        this.x = x;
-    }
-    public void setY(double y)
-    {
-        this.y = y;
-    }
-    public double getAngle()
-    {
-        return rotationAngle;
-    }
-    public void setAngle(double Angle)
-    {
-        this.rotationAngle = Angle;
-    }
-	public int getHP()
-    {
-        return hp;
-    }
-    public void setHP(int h)
-    {
-        this.hp = h;
+        Rectangle th = new Rectangle((int)x, (int)y, Constants.tankWidth, Constants.tankHeight);
+        Rectangle a2 = new Rectangle((int)a.getX(), (int)a.getY(), (int)a.getRadius(), (int)a.getRadius());
+        if (th.intersects(a2)){
+            return true;
+        }
+        
+        return false;
     }
 }

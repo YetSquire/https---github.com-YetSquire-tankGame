@@ -9,6 +9,7 @@ public class Shell extends Actor{
 	
 	public void update()
 	{
+		if (hp <= 0) gone = true;
 		if (x >= Constants.panelWidth)
 			gone = true;
 		if (x <= 0)
@@ -20,7 +21,6 @@ public class Shell extends Actor{
 		endTime = System.currentTimeMillis();
 		if (!gone && endTime-startTime > 50)
 		{
-			//System.out.println(x);
 			x -= speed*Math.cos(angle);
 			y -= speed*Math.sin(angle);
 			startTime = System.currentTimeMillis();

@@ -9,14 +9,14 @@ public abstract class Actor {
 	public boolean gone;
 	protected double startTime;
 	protected double endTime;
-    protected int hp;
+    public int hp;
 
-    public Actor(double x, double y, double angle, int hp)
+    public Actor(int x, int y, double angle, int hp)
     {
         gone = false;
-		this.x = (int)x;
-		this.y = (int)y;
-        hp = this.hp;
+		this.x = x;
+		this.y = y;
+        this.hp = hp;
 		this.angle = angle;
 		speed = Constants.shellSpeed;
 		startTime = System.currentTimeMillis();

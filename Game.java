@@ -1,16 +1,21 @@
 
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 public class Game implements Runnable{
 	
 	private JFrame frame;
+	private JLabel jlabel;
 	private GamePanel gp;
 	
 	public Game()
 	{
 		gp = new GamePanel(this);
-		frame = new JFrame();		
+		frame = new JFrame();	
+		String health = "Health " + Constants.tankHP;
+		jlabel = new JLabel(health);
+		gp.add(jlabel);
         frame.add(gp);
         frame.pack();
         frame.setSize(Constants.panelWidth, Constants.panelWidth);
@@ -25,9 +30,8 @@ public class Game implements Runnable{
 	public void run() {
 		while (true)
 		{
-			gp.update();
+			gp.update(jlabel);
 			gp.repaint();
-			
 		}
 	}
 }
