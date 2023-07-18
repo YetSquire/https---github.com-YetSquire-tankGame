@@ -1,3 +1,6 @@
+package src;
+
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -85,7 +88,7 @@ public class Tank extends Actor{
 
 		int cx = (int)cenX;
 		int cy = (int)cenY;
-		int x1 = (int) cx - 100;
+		int x1 = (int) cx - Constants.barrel;
 		int y1 = (int) y + Constants.tankHeight / 2 - 5;
 		Point center = new Point(cx, cy);
 		Point one = rotate(new Point(x1, y1 + 5), center);
@@ -95,7 +98,11 @@ public class Tank extends Actor{
 		g.drawOval(cx, cy, 2, 2);
 		int[] xarr = { one.x, two.x, three.x, four.x };
 		int[] yarr = { one.y, two.y, three.y, four.y };
-		g.fillPolygon(xarr, yarr, 4);
+		try {
+			g.fillPolygon(xarr, yarr, 4);
+		} catch (java.util.ConcurrentModificationException e) {
+			System.out.println("Ignored");
+		}
     }
 
     public Point rotate(Point p, Point c) {

@@ -1,3 +1,4 @@
+package src;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -34,12 +35,12 @@ public class GamePanel extends JPanel {
 			addShell = false;
 		}
 		altered = false;
-		if (Math.random() < 0.00001 && actors.size() < 50)
+		if (Math.random() < 0.00001 && actors.size() < 10)
 		{
 			double rA;
 			int x;
 			int y;
-			int r = (int) (Math.random() * 25) + 100;
+			int r = (int) ((Math.random() * 100) + 25);
 			int speed = (int) (25 / (Math.random() * r)) + 4;
 			double g = Math.random();
 			if (g < 0.25) {
