@@ -16,7 +16,7 @@ public class GamePanel extends JPanel {
 
 	public void update(JLabel jlabel) {
 
-		jlabel.setText("Health " + actors.get(0).hp);
+		jlabel.setText("            Health " + actors.get(0).hp);
 		altered = true;
 		actors.removeIf(s -> s.gone == true);
 		for (Actor s: actors)
@@ -41,7 +41,8 @@ public class GamePanel extends JPanel {
 			int x;
 			int y;
 			int r = (int) ((Math.random() * 100) + 25);
-			int speed = (int) (25 / (Math.random() * r)) + 4;
+			int speed = (int) ((r/20) + 4);
+			int hp = r*3;
 			double g = Math.random();
 			if (g < 0.25) {
 				x = (int) (Math.random() * Constants.panelWidth);
@@ -73,7 +74,7 @@ public class GamePanel extends JPanel {
 					rA = Math.random() * (Math.PI / 4);
 			}
 			altered = true;
-			actors.add(new Enemy(r, Constants.enemyHP, x, y, speed, rA));
+			actors.add(new Enemy(r, hp, x, y, speed, rA));
 			altered = false;
 		}
 		//System.out.println(actors.get(0).getHP());
@@ -85,8 +86,10 @@ public class GamePanel extends JPanel {
 						 {
 							altered = true;
 							a.hp -= 50;
-							s.hp -= 10;
+							s.hp -= a.hp/4;
+							if (s.hp < 0) s.hp = 0;
 							altered = false;
+							if (s.getClass().getSimpleName().equals("Shell") && a.hp < 0) Constants.score += a.getRadius();
 
 						}
 		if (actors.get(0).hp <= 0) exit = true;
@@ -182,43 +185,6 @@ class MoveAction extends AbstractAction {
 			GamePanel.actors.get(0).angle = (GamePanel.actors.get(0).angle + 0.1);
 
 		GamePanel.altered = false;
-		// if (direction.equals("SHOOT")) {
-		// 	double rA;
-		// 	int x;
-		// 	int y;
-		// 	int r = (int) (Math.random() * 25) + 100;
-		// 	int speed = (int) (25 / (Math.random() * r)) + 4;
-		// 	double g = Math.random();
-		// 	if (g < 0.25) {
-		// 		x = (int) (Math.random() * Constants.panelWidth);
-		// 		y = 10;
-		// 		if (x > Constants.panelWidth / 2)
-		// 			rA = Math.random() * (-Math.PI / 2);
-		// 		else
-		// 			rA = Math.random() * (Math.PI / 2) + Math.PI;
-		// 	} else if (g < 0.5) {
-		// 		y = (int) (Math.random() * Constants.panelHeight);
-		// 		x = 10;
-		// 		if (y < Constants.panelHeight / 2)
-		// 			rA = Math.random() * (Math.PI / 2) + Math.PI;
-		// 		else
-		// 			rA = Math.random() * (-Math.PI / 2) + Math.PI;
-		// 	} else if (g < 0.75) {
-		// 		x = (int) (Math.random() * Constants.panelWidth);
-		// 		y = Constants.panelHeight - 10;
-		// 		if (x < Constants.panelWidth / 2)
-		// 			rA = Math.random() * (-Math.PI / 4) + Math.PI / 2;
-		// 		else
-		// 			rA = Math.random() * (Math.PI / 4);
-		// 	} else {
-		// 		y = (int) (Math.random() * Constants.panelHeight);
-		// 		x = Constants.panelWidth - 10;
-		// 		if (y < Constants.panelHeight / 2)
-		// 			rA = Math.random() * (-Math.PI / 4);
-		// 		else
-		// 			rA = Math.random() * (Math.PI / 4);
-		// 	}
-		// 	GamePanel.actors.add(new Enemy(r, 10, x, y, speed, rA));
-		// }
+		
 	}
 }

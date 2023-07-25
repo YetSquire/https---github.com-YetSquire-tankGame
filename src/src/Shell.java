@@ -1,5 +1,6 @@
 package src;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 public class Shell extends Actor{
@@ -31,6 +32,7 @@ public class Shell extends Actor{
 	
 	public void draw(Graphics g)
 	{
+		g.setColor(Color.black);
 		g.fillOval(x, y, Constants.shellSize, Constants.shellSize);
 	}
 
