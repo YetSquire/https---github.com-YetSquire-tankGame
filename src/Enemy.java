@@ -38,7 +38,9 @@ public class Enemy extends Actor{
     public void draw(Graphics g)
     {
         double hold = ((double)hp)/ogHP;
-        g.setColor(new Color((int)(255*hold), 255, 255, 255));
+        int a = (int)(255-255*hold + 40);
+        if (a > 255) a = 255;
+        g.setColor(new Color(100, 100, 100, a));
         g.fillRect(x, y, radius, radius);
     }
 

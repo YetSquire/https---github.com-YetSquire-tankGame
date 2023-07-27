@@ -23,7 +23,8 @@ public class Tank extends Actor{
     {
 		super(x, y, angle, hp);
 		CircleR = 30;
-        horizontal = true;
+        if (Constants.tankHeight > Constants.tankWidth) horizontal = false;
+		else horizontal = true;
     }
     public void horz()
 	{
