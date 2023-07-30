@@ -3,6 +3,7 @@ package src;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
 
@@ -114,7 +115,18 @@ public class GamePanel extends JPanel {
 							if (s.getClass().getSimpleName().equals("Shell") && a.hp < 0) Constants.score += a.getRadius();
 
 						}
-		if (actors.get(0).hp <= 0) exit = true;
+		if (actors.get(0).hp <= 0)
+		{
+			
+			if (((Tank)actors.get(0)).getLives() <= 1) exit = true;
+			else 
+			{
+				reset(((Tank)actors.get(0)).getLives() -1);
+				repaint();
+				Game.waitLife();
+			}
+			if (Constants.hiScore < Constants.score) Constants.hiScore = Constants.score;
+		}
 	}
 
 	public GamePanel() {
@@ -141,7 +153,7 @@ public class GamePanel extends JPanel {
 	public void paintComponent(Graphics g1) {
 		if (!altered)
 		{
-			super.paintComponent(g1);
+		super.paintComponent(g1);
 		for (Actor s : actors) {
 			s.draw(g1);
 		}
@@ -155,10 +167,11 @@ public class GamePanel extends JPanel {
 		return exit;
 	}
 
-	public void reset()
+	public void reset(int lives)
 	{
 		actors = new ArrayList<Actor>();
 		tank = new Tank(Constants.panelWidth/2, Constants.panelHeight/2, Math.toRadians(45), Constants.tankHP);
+		tank.setLives(lives);
 		actors.add(tank);
 		addShell = false;
 		altered = false;

@@ -10,6 +10,8 @@ public class Constants {
 	public static int panelHeight = 800;
 	public static int panelWidth = 800;
 	public static int shellHP = 1;
-	public static int tankHP = 10;
+	public static int tankHP = 400;
 	public static int score = 0;
+	public static int hiScore  = 0;
+	public static int tankLives = 3;
 }

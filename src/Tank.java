@@ -13,6 +13,7 @@ public class Tank extends Actor{
 	private double cenX;
 	private double cenY;
 	private int CircleR;
+	private int lives;
 	private boolean horizontal;
 	public boolean noLeft;
 	public boolean noRight;
@@ -23,6 +24,7 @@ public class Tank extends Actor{
     {
 		super(x, y, angle, hp);
 		CircleR = 30;
+		lives = Constants.tankLives;
         if (Constants.tankHeight > Constants.tankWidth) horizontal = false;
 		else horizontal = true;
     }
@@ -46,7 +48,6 @@ public class Tank extends Actor{
 
     public void update()
     {
-		if (hp <= 0) gone = true;
         cenX = x + Constants.tankWidth/2;
 		cenY = y + Constants.tankHeight/2;
 		Point loc = MouseInfo.getPointerInfo().getLocation();
@@ -141,6 +142,16 @@ public class Tank extends Actor{
     {
         return cenY;
     }
+
+	public int getLives()
+	{
+		return lives;
+	}
+
+	public void setLives(int l)
+	{
+		lives = l;
+	}
 
 	public boolean intersects(Actor a)
     {
