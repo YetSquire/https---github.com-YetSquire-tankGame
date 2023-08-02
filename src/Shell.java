@@ -2,11 +2,15 @@ package src;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 
 public class Shell extends Actor{
-	public Shell(int x, int y, double angle, int hp)
+	public Shell(int x, int y, double angle, int hp, int speed)
 	{
-		super(x, y, angle, hp);
+		super(x, y, angle, hp, speed);
+		Ellipse2D.Double ci = new Ellipse2D.Double(x, y, Constants.shellSize, Constants.shellSize);
+		p = new Area(ci);
 	}
 	
 	public void update()
@@ -33,11 +37,18 @@ public class Shell extends Actor{
 	public void draw(Graphics g)
 	{
 		g.setColor(Color.black);
+		Ellipse2D.Double ci = new Ellipse2D.Double(x, y, Constants.shellSize, Constants.shellSize);
+		p = new Area(ci);
 		g.fillOval(x, y, Constants.shellSize, Constants.shellSize);
 	}
 
 	public double getRadius()
 	{
 		return Constants.shellSize;
+	}
+
+	public int getOGHP()
+	{
+		return hp;
 	}
 }

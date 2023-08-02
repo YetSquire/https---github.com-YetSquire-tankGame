@@ -1,17 +1,16 @@
 package src;
-import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.geom.Area;
 
-public class Enemy extends Actor{
-    private double ogHP;
-    private int radius;
-    private int speed;
-    private double endTime;
-    public Enemy(int r, int h, int x, int y, int s, double rA)
+public abstract class Enemy extends Actor{
+    protected int ogHP;
+    protected int length;
+    protected double endTime;
+    public Enemy(int l, int h, int x, int y, int s, double rA)
     {
-        super(x, y, rA, h);
+        super(x, y, rA, h, s);
         ogHP = h;
-        radius = r;
+        length = l;
         speed = s;
     }
 
@@ -35,17 +34,16 @@ public class Enemy extends Actor{
 		}
     }
 
-    public void draw(Graphics g)
+    public abstract void draw(Graphics g);
+
+    public int getLength()
     {
-        double hold = ((double)hp)/ogHP;
-        int a = (int)(255-255*hold + 40);
-        if (a > 255) a = 255;
-        g.setColor(new Color(100, 100, 100, a));
-        g.fillRect(x, y, radius, radius);
+        return length;
     }
 
-    public double getRadius()
+    public int getOGHP()
     {
-        return radius;
+        return ogHP;
     }
+
 }

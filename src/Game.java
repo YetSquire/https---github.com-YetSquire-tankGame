@@ -21,15 +21,15 @@ import javax.swing.border.EmptyBorder;
 public class Game implements Runnable{
 	
 	private JFrame frame;
-	private JPanel holder;
 	private JPanel panelEnd;
 	private JPanel card1;
 	private JPanel card2;
+	private JPanel card3;
 	private JLabel healthLabel;
 	private JLabel scoreLabel;
 	private JLabel highLabel;
 	private JLabel lifeLabel;
-	private static JLabel countLabel;
+	private JLabel countLabel;
 	private JLabel endScreen;
 	private JLabel hold1;
 	private JLabel hold2;
@@ -42,8 +42,7 @@ public class Game implements Runnable{
 	public Game() throws InterruptedException
 	{
 		exit = false;
-		gp = new GamePanel();
-		holder = new JPanel();
+		gp = new GamePanel(this);
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(1, 5, Constants.panelWidth/12, 1));
 		frame = new JFrame();
@@ -52,25 +51,30 @@ public class Game implements Runnable{
 		c.setLayout(card);	
 		card1 = new JPanel();
 		card2 = new JPanel();
+		card3 = new JPanel();
 		card1.setLayout(new BorderLayout());	
 		card2.setLayout(new BorderLayout());
+		card3.setLayout(new BorderLayout());
 		String health = "Health: " + Constants.tankHP;
 		String score = "Score: " + Constants.score;
 		String hiScore = "High Score: " + Constants.hiScore;
 		String lives = "Lives: " + ((Tank) gp.actors.get(0)).getLives();
 		healthLabel = new JLabel(health);
 		scoreLabel = new JLabel(score);
-		countLabel = new JLabel();
+		countLabel = new JLabel("", SwingConstants.CENTER);
 		highLabel = new JLabel(hiScore);
 		lifeLabel = new JLabel(lives);
 		panel.add(highLabel);
 		panel.add(scoreLabel);
-		panel.add(countLabel);
+		countLabel.setFont(new Font("Calibri", Font.BOLD, 60));
+		card2.add(countLabel);
 		panel.add(healthLabel);
 		panel.add(lifeLabel);
 		card1.add(panel, BorderLayout.NORTH);
 		card1.add(gp, BorderLayout.CENTER);
 		frame.add(card1);
+		frame.add(card2);
+		frame.add(card3);
         frame.pack();
         frame.setSize(Constants.panelWidth, Constants.panelWidth);
         frame.setVisible(true);
@@ -90,7 +94,6 @@ public class Game implements Runnable{
 			}
 		});
 		endScreen.setFont(new Font("Impact", Font.BOLD, 60));
-		holder.setLayout(new BorderLayout());
 		hold1 = new JLabel();
 		hold2 = new JLabel("", SwingConstants.RIGHT);
 		panelEnd = new JPanel();
@@ -98,11 +101,9 @@ public class Game implements Runnable{
 		panelEnd.setLayout(new GridLayout(1, 2));
 		panelEnd.add(hold1);
 		panelEnd.add(hold2);
-		holder.add(panelEnd, BorderLayout.NORTH);
-
-		holder.add(endScreen, BorderLayout.CENTER);
-		holder.add(restart, BorderLayout.SOUTH);
-		frame.add(holder);
+		card3.add(panelEnd, BorderLayout.NORTH);
+		card3.add(endScreen, BorderLayout.CENTER);
+		card3.add(restart, BorderLayout.SOUTH);
 	}
 
 	
@@ -132,13 +133,21 @@ public class Game implements Runnable{
 			String hiScore = "High Score: " + Constants.hiScore;
 			hold1.setText(hiScore);
 			hold2.setText("Score: " + Constants.score);
-			card.next(c);
+			card.last(c);
 			Constants.score = 0;
 		}
 	}
 
-	public static void waitLife()
+	public void waitLife()
 	{
+		healthLabel.setText("Health: 0");//no idea why actual update doesn't work
+		gp.repaint();
+		try {
+			TimeUnit.SECONDS.sleep(2);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		card.next(c);
 		countLabel.setText("3");
 		try {
 			TimeUnit.SECONDS.sleep(1);
@@ -158,6 +167,8 @@ public class Game implements Runnable{
 			e.printStackTrace();
 		}
 		countLabel.setText("");
+		card.first(c);
+
 	}
 }
 

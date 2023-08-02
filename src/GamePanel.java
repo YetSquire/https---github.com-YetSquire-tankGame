@@ -13,6 +13,7 @@ public class GamePanel extends JPanel {
 	protected static Tank tank;
 	private boolean addShell;
 	private boolean exit;
+	private Game parent;
 	protected static boolean altered;
 
 	public void update(JLabel jlabel) {
@@ -28,11 +29,11 @@ public class GamePanel extends JPanel {
 		if (addShell)
 		{
 			altered = true;
-			int x1 = (int) (((Tank)actors.get(0)).getCX() - 100);
-			int y1 = (int) (actors.get(0).getY() + Constants.tankHeight / 2 - 5);
-			Point center = new Point((int)((Tank)actors.get(0)).getCX(), (int) ((Tank)actors.get(0)).getCY());
+			int x1 = (((Tank)actors.get(0)).x - Constants.barrel);
+			int y1 = (actors.get(0).getY());
+			Point center = new Point(((Tank)actors.get(0)).x, ((Tank)actors.get(0)).y);
 			Point one = ((Tank)actors.get(0)).rotate(new Point(x1, y1), center);
-			actors.add(new Shell(one.x, one.y, actors.get(0).angle, Constants.shellHP));
+			actors.add(new Shell(one.x, one.y, actors.get(0).angle, Constants.shellHP, Constants.shellSpeed));
 			addShell = false;
 		}
 		altered = false;
@@ -97,39 +98,50 @@ public class GamePanel extends JPanel {
 			
 			}
 			altered = true;
-			actors.add(new Enemy(r, hp, x, y, speed, rA));
+			double hold = Math.random();
+			if (hold < 0.33)
+			{
+				actors.add(new Triangle(r, hp, x, y, speed, rA));
+			}
+			else if (hold > 0.67)
+			{
+				actors.add(new Square(r, hp, x, y, speed, rA));
+			}
+			else
+			{
+				actors.add(new Square(r, hp, x, y, speed, rA));
+			}
 			altered = false;
 		}
 		//System.out.println(actors.get(0).getHP());
 		for (Actor s: actors)
 			if (s.getClass().getSimpleName().equals("Shell") || s.getClass().getSimpleName().equals("Tank"))
 				for (Actor a: actors)
-					if (a.getClass().getSimpleName().equals("Enemy"))
-						 if (s.intersects(a)) 
+					if (!(a.getClass().getSimpleName().equals("Shell") || a.getClass().getSimpleName().equals("Tank")) && s.intersects(a.getArea())) 
 						 {
 							altered = true;
 							a.hp -= 50;
 							s.hp -= Math.abs(a.hp/4);
 							if (s.hp < 0) s.hp = 0;
 							altered = false;
-							if (s.getClass().getSimpleName().equals("Shell") && a.hp < 0) Constants.score += a.getRadius();
+							if (s.getClass().getSimpleName().equals("Shell") && a.hp < 0) Constants.score += a.getOGHP();
 
 						}
 		if (actors.get(0).hp <= 0)
 		{
-			
 			if (((Tank)actors.get(0)).getLives() <= 1) exit = true;
 			else 
 			{
+				parent.waitLife();
 				reset(((Tank)actors.get(0)).getLives() -1);
 				repaint();
-				Game.waitLife();
 			}
 			if (Constants.hiScore < Constants.score) Constants.hiScore = Constants.score;
 		}
 	}
 
-	public GamePanel() {
+	public GamePanel(Game parent) {
+		this.parent = parent;
 		addShell = false;
 		altered = false;
 		exit = false;

@@ -1,12 +1,8 @@
 package src;
 
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
+import java.awt.geom.Area;
 
 public class Tank extends Actor{
 	// going to make tanks, turn off static and pass tank object to moveaction
@@ -22,11 +18,23 @@ public class Tank extends Actor{
 
     public Tank(int x, int y, double angle, int hp)
     {
-		super(x, y, angle, hp);
+		super(x, y, angle, hp, -1);
 		CircleR = 30;
 		lives = Constants.tankLives;
         if (Constants.tankHeight > Constants.tankWidth) horizontal = false;
 		else horizontal = true;
+
+		int length = Constants.tankHeight;
+		int width = Constants.tankWidth;
+		Point a = new Point(x - width/2, y - length/2);
+        Point b = new Point(x - width/2, y + length/2);
+        Point c = new Point(x + width/2, y + length/2);
+        Point d = new Point(x + width/2, y - length/2);
+        int[] xArr = {(int)(a.getX()), (int)(b.getX()), (int)(c.getX()), (int)(d.getX())};
+        int[] yArr = {(int)(a.getY()), (int)(b.getY()), (int)(c.getY()), (int)(d.getY())};
+
+        Polygon thisP = new Polygon(xArr, yArr, 4);
+        p = new Area(thisP);
     }
     public void horz()
 	{
@@ -84,27 +92,33 @@ public class Tank extends Actor{
     {
         Graphics2D g = (Graphics2D) g1;
 		g.setColor(Color.black);
-		g.drawRect((int) x, (int) y, Constants.tankWidth, Constants.tankHeight);
-		g.fillOval((int) x + Constants.tankWidth / 2 - CircleR / 2, (int) y + Constants.tankHeight / 2 - CircleR / 2, CircleR,
-				CircleR);
+		int length = Constants.tankHeight;
+		int width = Constants.tankWidth;
+		Point a = new Point(x - width/2, y - length/2);
+        Point b = new Point(x - width/2, y + length/2);
+        Point c = new Point(x + width/2, y + length/2);
+        Point d = new Point(x + width/2, y - length/2);
+        int[] xArr = {(int)(a.getX()), (int)(b.getX()), (int)(c.getX()), (int)(d.getX())};
+        int[] yArr = {(int)(a.getY()), (int)(b.getY()), (int)(c.getY()), (int)(d.getY())};
 
-		int cx = (int)cenX;
-		int cy = (int)cenY;
+        Polygon thisP = new Polygon(xArr, yArr, 4);
+        p = new Area(thisP);
+		g.draw(thisP);
+		g.fillOval((int) x-CircleR/2, (int) y-CircleR/2, CircleR, CircleR);
+
+		int cx = x;
+		int cy = y;
 		int x1 = (int) cx - Constants.barrel;
-		int y1 = (int) y + Constants.tankHeight / 2 - 5;
+		int y1 = (int) cy;
 		Point center = new Point(cx, cy);
 		Point one = rotate(new Point(x1, y1 + 5), center);
-		Point two = rotate(new Point(x1+1, y1 - 5), center);
+		Point two = rotate(new Point(x1, y1 - 5), center);
 		Point three = rotate(new Point(cx, cy - 5), center);
 		Point four = rotate(new Point(cx, cy + 5), center);
-		g.drawOval(cx, cy, 2, 2);
-		int[] xarr = { one.x, two.x, three.x, four.x };
-		int[] yarr = { one.y, two.y, three.y, four.y };
-		try {
-			g.fillPolygon(xarr, yarr, 4);
-		} catch (java.util.ConcurrentModificationException e) {
-			System.out.println("Ignored");
-		}
+		int[] x2Arr = { one.x, two.x, three.x, four.x };
+		int[] y2Arr = { one.y, two.y, three.y, four.y };
+		Polygon anotherP = new Polygon(x2Arr, y2Arr, 4);
+        g.fillPolygon(anotherP);
     }
 
     public Point rotate(Point p, Point c) {
@@ -134,15 +148,6 @@ public class Tank extends Actor{
         horizontal = b;
     }
 
-    public double getCX()
-    {
-        return cenX;
-    }
-    public double getCY()
-    {
-        return cenY;
-    }
-
 	public int getLives()
 	{
 		return lives;
@@ -153,14 +158,8 @@ public class Tank extends Actor{
 		lives = l;
 	}
 
-	public boolean intersects(Actor a)
-    {
-        Rectangle th = new Rectangle((int)x, (int)y, Constants.tankWidth, Constants.tankHeight);
-        Rectangle a2 = new Rectangle((int)a.getX(), (int)a.getY(), (int)a.getRadius(), (int)a.getRadius());
-        if (th.intersects(a2)){
-            return true;
-        }
-        
-        return false;
-    }
+	public int getOGHP()
+	{
+		return Constants.tankHP;
+	}
 }
