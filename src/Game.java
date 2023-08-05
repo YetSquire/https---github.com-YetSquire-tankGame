@@ -9,6 +9,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
@@ -28,6 +30,7 @@ public class Game implements Runnable{
 	private JLabel healthLabel;
 	private JLabel scoreLabel;
 	private JLabel highLabel;
+	private JLabel rechargeLabel;
 	private JLabel lifeLabel;
 	private JLabel countLabel;
 	private JLabel endScreen;
@@ -38,9 +41,12 @@ public class Game implements Runnable{
 	public static boolean exit;
 	private CardLayout card;
 	private Container c;
+	private Timer t;
+	private boolean running;
 
 	public Game() throws InterruptedException
 	{
+		running = true;
 		exit = false;
 		gp = new GamePanel(this);
 		JPanel panel = new JPanel();
@@ -58,16 +64,19 @@ public class Game implements Runnable{
 		String health = "Health: " + Constants.tankHP;
 		String score = "Score: " + Constants.score;
 		String hiScore = "High Score: " + Constants.hiScore;
-		String lives = "Lives: " + ((Tank) gp.actors.get(0)).getLives();
+		String lives = "Lives: " + ((Tank) GamePanel.actors.get(0)).getLives();
+		t = new Timer();
 		healthLabel = new JLabel(health);
 		scoreLabel = new JLabel(score);
 		countLabel = new JLabel("", SwingConstants.CENTER);
 		highLabel = new JLabel(hiScore);
 		lifeLabel = new JLabel(lives);
+		rechargeLabel = new JLabel();
 		panel.add(highLabel);
 		panel.add(scoreLabel);
 		countLabel.setFont(new Font("Calibri", Font.BOLD, 60));
 		card2.add(countLabel);
+		panel.add(rechargeLabel);
 		panel.add(healthLabel);
 		panel.add(lifeLabel);
 		card1.add(panel, BorderLayout.NORTH);
@@ -104,6 +113,7 @@ public class Game implements Runnable{
 		card3.add(panelEnd, BorderLayout.NORTH);
 		card3.add(endScreen, BorderLayout.CENTER);
 		card3.add(restart, BorderLayout.SOUTH);
+
 	}
 
 	
@@ -111,6 +121,7 @@ public class Game implements Runnable{
 	public void run() {
 		while (!exit)
 		{
+			if (!((Tank)(GamePanel.actors.get(0))).getReload() && !running) t.schedule(task, 1000);
 			gp.repaint();
 			gp.update(healthLabel);
 			String hiScore = "High Score: " + Constants.hiScore;
@@ -170,5 +181,34 @@ public class Game implements Runnable{
 		card.first(c);
 
 	}
+
+	TimerTask task = new TimerTask() {
+
+		public void run()
+		{
+			running = true;
+			int i = 150;
+			String recharge = "Reloading: " + Character.toString ((char) i);
+			rechargeLabel.setText(recharge);
+			try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+			recharge = recharge.concat(recharge);
+			rechargeLabel.setText(recharge);
+			try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+			recharge = recharge.concat(recharge);
+			rechargeLabel.setText(recharge);
+			((Tank)(GamePanel.actors.get(0))).setReload(true);
+			recharge = "Reloaded";
+			rechargeLabel.setText(recharge);
+			running = false;
+		}
+	};
 }
 

@@ -13,6 +13,7 @@ public abstract class Actor {
 	protected double endTime;
     public int hp;
     public int ogHP;
+    protected boolean friendly;
 
     public Actor(int x, int y, double angle, int hp, int speed)
     {
@@ -57,6 +58,11 @@ public abstract class Actor {
     public Area getArea()
     {
         return p;
+    }
+
+    public boolean getFriendly()
+    {
+        return friendly;
     }
 
     public abstract int getOGHP();

@@ -3,15 +3,20 @@ package src;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
 
-@SuppressWarnings("serial")
 public class GamePanel extends JPanel {
 	protected static ArrayList<Actor> actors;
 	protected static Tank tank;
+
+	//change
+	private static int expX;
+	private static int expY;
+	public static int enemyNum;
+	private boolean addBomb;
 	private boolean addShell;
+	private static boolean explosion; 
 	private boolean exit;
 	private Game parent;
 	protected static boolean altered;
@@ -20,15 +25,15 @@ public class GamePanel extends JPanel {
 
 		jlabel.setText("            Health " + actors.get(0).hp);
 		altered = true;
-		actors.removeIf(s -> s.gone == true);
 		for (Actor s: actors)
 		{
 			s.update();
 		}
+		actors.removeIf(s -> s.gone == true);
 		altered = false;
+
 		if (addShell)
 		{
-			altered = true;
 			int x1 = (((Tank)actors.get(0)).x - Constants.barrel);
 			int y1 = (actors.get(0).getY());
 			Point center = new Point(((Tank)actors.get(0)).x, ((Tank)actors.get(0)).y);
@@ -36,8 +41,30 @@ public class GamePanel extends JPanel {
 			actors.add(new Shell(one.x, one.y, actors.get(0).angle, Constants.shellHP, Constants.shellSpeed));
 			addShell = false;
 		}
-		altered = false;
-		if (actors.size() < 10)
+		if (addBomb)
+		{
+			int x1 = (((Tank)actors.get(0)).x - Constants.barrel);
+			int y1 = (actors.get(0).getY());
+			Point center = new Point(((Tank)actors.get(0)).x, ((Tank)actors.get(0)).y);
+			Point one = ((Tank)actors.get(0)).rotate(new Point(x1, y1), center);
+			actors.add(new Bomb(one.x, one.y, actors.get(0).angle, Constants.shellHP, Constants.bombSize));
+			addBomb = false;
+			((Tank)actors.get(0)).setReload(false);
+		}
+
+		if (explosion)
+		{
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			explosion = false;
+		}
+
+		if (enemyNum < 15)
 		{
 			double rA;
 			int x;
@@ -111,17 +138,19 @@ public class GamePanel extends JPanel {
 			{
 				actors.add(new Square(r, hp, x, y, speed, rA));
 			}
+			enemyNum++;
 			altered = false;
 		}
-		//System.out.println(actors.get(0).getHP());
+
 		for (Actor s: actors)
-			if (s.getClass().getSimpleName().equals("Shell") || s.getClass().getSimpleName().equals("Tank"))
+			if (s.getFriendly())
 				for (Actor a: actors)
-					if (!(a.getClass().getSimpleName().equals("Shell") || a.getClass().getSimpleName().equals("Tank")) && s.intersects(a.getArea())) 
+					if (!a.getFriendly() && s.intersects(a.getArea()))
 						 {
 							altered = true;
 							a.hp -= 50;
-							s.hp -= Math.abs(a.hp/4);
+							s.hp -= a.hp/4;
+							if (s.getClass().getSimpleName().equals("Tank")) a.hp -= 1000;
 							if (s.hp < 0) s.hp = 0;
 							altered = false;
 							if (s.getClass().getSimpleName().equals("Shell") && a.hp < 0) Constants.score += a.getOGHP();
@@ -141,6 +170,7 @@ public class GamePanel extends JPanel {
 	}
 
 	public GamePanel(Game parent) {
+		enemyNum = 0;
 		this.parent = parent;
 		addShell = false;
 		altered = false;
@@ -155,7 +185,14 @@ public class GamePanel extends JPanel {
 
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent me) {
-				addShell = true;
+				if (me.getButton()==MouseEvent.BUTTON1)
+				{
+					addShell = true;
+				}
+				else if (me.getButton()==MouseEvent.BUTTON3)
+				{
+					if (((Tank)actors.get(0)).getReload()) addBomb = true;
+				}
 			}
 		});
 
@@ -174,6 +211,13 @@ public class GamePanel extends JPanel {
 		Constants.panelWidth = this.getWidth();
 	}
 
+	public static void explosion(int x, int y)
+	{
+		explosion = true;
+		expX = x;
+		expY = y;
+	}
+
 	public boolean checkExit()
 	{
 		return exit;
@@ -186,6 +230,8 @@ public class GamePanel extends JPanel {
 		tank.setLives(lives);
 		actors.add(tank);
 		addShell = false;
+		addBomb = false;
+		enemyNum = 0;
 		altered = false;
 		exit = false;
 	}
@@ -252,4 +298,5 @@ class MoveAction extends AbstractAction {
 		GamePanel.altered = false;
 		
 	}
+
 }

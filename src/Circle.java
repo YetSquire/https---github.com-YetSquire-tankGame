@@ -6,6 +6,7 @@ public class Circle extends Enemy{
     public Circle(int l, int h, int x, int y, int s, double rA)
     {
         super(l, h, x, y, s, rA);
+        friendly = false;
     }
 
     public void draw(Graphics g)

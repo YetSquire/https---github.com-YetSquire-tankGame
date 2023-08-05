@@ -9,6 +9,7 @@ public class Shell extends Actor{
 	public Shell(int x, int y, double angle, int hp, int speed)
 	{
 		super(x, y, angle, hp, speed);
+		friendly = true;
 		Ellipse2D.Double ci = new Ellipse2D.Double(x, y, Constants.shellSize, Constants.shellSize);
 		p = new Area(ci);
 	}

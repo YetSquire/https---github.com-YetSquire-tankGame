@@ -10,6 +10,7 @@ public class Square extends Enemy {
     public Square(int l, int h, int x, int y, int s, double rA)
     {
         super(l, h, x, y, s, rA);
+        friendly = false;
         Point a = new Point(x - length/2, y - length/2);
         Point b = new Point(x - length/2, y + length/2);
         Point c = new Point(x + length/2, y + length/2);

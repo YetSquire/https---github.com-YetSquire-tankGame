@@ -12,6 +12,7 @@ public class Triangle extends Enemy{
     public Triangle(int l, int h, int x, int y, int s, double rA)
     {
         super(l, h, x, y, s, rA);
+        friendly = false;
         Point a = new Point(x, y - length);
         Point b = new Point((int)(x-(length*Math.sqrt(3)/2)), (int)(y+(length*1/2)));
         Point c = new Point((int)(x+(length*Math.sqrt(3)/2)), (int)(y+(length*1/2)));

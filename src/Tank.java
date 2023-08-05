@@ -15,14 +15,17 @@ public class Tank extends Actor{
 	public boolean noRight;
 	public boolean noUp;
 	public boolean noDown;
+	private boolean reloaded;
 
     public Tank(int x, int y, double angle, int hp)
     {
 		super(x, y, angle, hp, -1);
+		friendly = true;
 		CircleR = 30;
 		lives = Constants.tankLives;
         if (Constants.tankHeight > Constants.tankWidth) horizontal = false;
 		else horizontal = true;
+		reloaded = false;
 
 		int length = Constants.tankHeight;
 		int width = Constants.tankWidth;
@@ -157,6 +160,17 @@ public class Tank extends Actor{
 	{
 		lives = l;
 	}
+
+	public boolean getReload()
+	{
+		return reloaded;
+	}
+
+	public void setReload(boolean x)
+	{
+		reloaded = x;
+	}
+
 
 	public int getOGHP()
 	{
