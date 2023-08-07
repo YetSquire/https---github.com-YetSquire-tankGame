@@ -2,6 +2,7 @@ package src;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -20,17 +21,19 @@ public class GamePanel extends JPanel {
 	private boolean exit;
 	private Game parent;
 	protected static boolean altered;
+	private Ellipse2D.Double radar;
+	private boolean growing;
 
 	public void update(JLabel jlabel) {
 
 		jlabel.setText("            Health " + actors.get(0).hp);
 		altered = true;
+		if (growing) radarGrowth();
 		for (Actor s: actors)
 		{
 			s.update();
 		}
 		actors.removeIf(s -> s.gone == true);
-		altered = false;
 
 		if (addShell)
 		{
@@ -63,7 +66,7 @@ public class GamePanel extends JPanel {
 			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
 			explosion = false;
 		}
-
+		altered = false;
 		if (enemyNum < 15)
 		{
 			double rA;
@@ -124,8 +127,8 @@ public class GamePanel extends JPanel {
 			rA = Math.atan2((y - actors.get(0).getY()), x - actors.get(0).getX());
 			
 			}
-			altered = true;
 			double hold = Math.random();
+			altered = true;
 			if (hold < 0.33)
 			{
 				actors.add(new Triangle(r, hp, x, y, speed, rA));
@@ -171,6 +174,7 @@ public class GamePanel extends JPanel {
 
 	public GamePanel(Game parent) {
 		enemyNum = 0;
+		radar = new Ellipse2D.Double(0, 0, 0, 0);
 		this.parent = parent;
 		addShell = false;
 		altered = false;
@@ -182,7 +186,7 @@ public class GamePanel extends JPanel {
 		setBindings();
 		setFocusable(true);
 		setVisible(true);
-
+		setBackground(new Color(0, 100, 50));
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent me) {
 				if (me.getButton()==MouseEvent.BUTTON1)
@@ -196,6 +200,17 @@ public class GamePanel extends JPanel {
 			}
 		});
 
+		addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e)
+			{
+				if (e.getKeyCode() == 49)
+				{
+					growing = true;
+				}
+			}
+			public void keyTyped(KeyEvent e){};
+			public void keyReleased(KeyEvent e){};
+		});
 	}
 
 	@Override
@@ -203,6 +218,9 @@ public class GamePanel extends JPanel {
 		if (!altered)
 		{
 		super.paintComponent(g1);
+		g1.setColor(Color.white);
+		if (growing) g1.fillOval((int)radar.getX(), (int)radar.getY(), (int)radar.getWidth(), (int)radar.getHeight());
+		//Not working
 		for (Actor s : actors) {
 			s.draw(g1);
 		}
@@ -254,6 +272,18 @@ public class GamePanel extends JPanel {
 		this.getActionMap().put("ROTATE", new MoveAction("ROTATE", 1));
 	}
 
+
+	public void radarGrowth()
+	{
+		radar.setFrame(actors.get(0).getX(), actors.get(0).getY(), radar.getWidth()+1, radar.getHeight()+1);
+		if (radar.getWidth() > Constants.panelWidth)
+		{
+			radar.setFrame(0, 0, 0, 0);
+			growing = false;
+		}
+	}
+
+
 }
 
 @SuppressWarnings("serial")
@@ -295,8 +325,8 @@ class MoveAction extends AbstractAction {
 		if (direction.equals("ROTATE"))
 			GamePanel.actors.get(0).angle = (GamePanel.actors.get(0).angle + 0.1);
 
+
 		GamePanel.altered = false;
 		
 	}
-
 }

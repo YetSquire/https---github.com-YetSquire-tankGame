@@ -25,7 +25,7 @@ public class Tank extends Actor{
 		lives = Constants.tankLives;
         if (Constants.tankHeight > Constants.tankWidth) horizontal = false;
 		else horizontal = true;
-		reloaded = false;
+		reloaded = true;
 
 		int length = Constants.tankHeight;
 		int width = Constants.tankWidth;

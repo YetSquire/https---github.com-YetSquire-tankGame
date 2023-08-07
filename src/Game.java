@@ -41,12 +41,12 @@ public class Game implements Runnable{
 	public static boolean exit;
 	private CardLayout card;
 	private Container c;
-	private Timer t;
+	private Thread t;
 	private boolean running;
 
 	public Game() throws InterruptedException
 	{
-		running = true;
+		running = false;
 		exit = false;
 		gp = new GamePanel(this);
 		JPanel panel = new JPanel();
@@ -65,13 +65,20 @@ public class Game implements Runnable{
 		String score = "Score: " + Constants.score;
 		String hiScore = "High Score: " + Constants.hiScore;
 		String lives = "Lives: " + ((Tank) GamePanel.actors.get(0)).getLives();
-		t = new Timer();
+		t = new Thread(new ReloadThread(rechargeLabel));
 		healthLabel = new JLabel(health);
 		scoreLabel = new JLabel(score);
 		countLabel = new JLabel("", SwingConstants.CENTER);
 		highLabel = new JLabel(hiScore);
 		lifeLabel = new JLabel(lives);
 		rechargeLabel = new JLabel();
+		String recharge = "Reloading: ";
+		int i = 150;
+		String block = Character.toString ((char) i);
+		recharge = recharge.concat(block);
+		recharge = recharge.concat(block);
+		recharge = recharge.concat(block);
+		rechargeLabel.setText(recharge);
 		panel.add(highLabel);
 		panel.add(scoreLabel);
 		countLabel.setFont(new Font("Calibri", Font.BOLD, 60));
@@ -121,7 +128,11 @@ public class Game implements Runnable{
 	public void run() {
 		while (!exit)
 		{
-			if (!((Tank)(GamePanel.actors.get(0))).getReload() && !running) t.schedule(task, 1000);
+			if (!((Tank)(GamePanel.actors.get(0))).getReload() && !t.isAlive())
+			{
+				t = new Thread(new ReloadThread(rechargeLabel));
+				t.start();
+			}
 			gp.repaint();
 			gp.update(healthLabel);
 			String hiScore = "High Score: " + Constants.hiScore;
@@ -181,34 +192,5 @@ public class Game implements Runnable{
 		card.first(c);
 
 	}
-
-	TimerTask task = new TimerTask() {
-
-		public void run()
-		{
-			running = true;
-			int i = 150;
-			String recharge = "Reloading: " + Character.toString ((char) i);
-			rechargeLabel.setText(recharge);
-			try {
-			TimeUnit.SECONDS.sleep(1);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-			recharge = recharge.concat(recharge);
-			rechargeLabel.setText(recharge);
-			try {
-			TimeUnit.SECONDS.sleep(1);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-			recharge = recharge.concat(recharge);
-			rechargeLabel.setText(recharge);
-			((Tank)(GamePanel.actors.get(0))).setReload(true);
-			recharge = "Reloaded";
-			rechargeLabel.setText(recharge);
-			running = false;
-		}
-	};
 }
 
