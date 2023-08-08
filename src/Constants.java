@@ -8,7 +8,7 @@ public class Constants {
 	public static final int bombSize = 10;
 	public static final int barrel = 60;
 	public static  int panelHeight = 800;
-	public static  int panelWidth = 800;
+	public static  int panelWidth = 1600;
 	public static final int shellHP = 1;
 	public static final int shellSpeed = 30;
 	public static final int bombSpeed = 5;

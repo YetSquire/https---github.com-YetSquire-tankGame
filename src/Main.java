@@ -3,6 +3,7 @@ package src;
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException {
+
 		Game game = new Game();
 		Thread t = new Thread(game);
 		while (true)

@@ -120,8 +120,24 @@ public class Tank extends Actor{
 		Point four = rotate(new Point(cx, cy + 5), center);
 		int[] x2Arr = { one.x, two.x, three.x, four.x };
 		int[] y2Arr = { one.y, two.y, three.y, four.y };
+
+		int x2 = (int) cx - Constants.panelHeight;
+		int y2 = (int) cy;
+		Point five = rotate(new Point(x2, y2 + 80), center);
+		Point six = rotate(new Point(x2, y2 - 80), center);
+		Point seven = rotate(new Point(cx-10, cy - 10), center);
+		Point eight = rotate(new Point(cx-10, cy + 10), center);
+
+		int[] x3Arr = { five.x, six.x, seven.x, eight.x };
+		int[] y3Arr = { five.y, six.y, seven.y, eight.y };
 		Polygon anotherP = new Polygon(x2Arr, y2Arr, 4);
-        g.fillPolygon(anotherP);
+		Polygon shadow = new Polygon(x3Arr, y3Arr, 4);
+        
+		g.setColor(Color.white);
+		g.fillPolygon(shadow);
+
+		g.setColor(Color.black);
+		g.fillPolygon(anotherP);
     }
 
     public Point rotate(Point p, Point c) {

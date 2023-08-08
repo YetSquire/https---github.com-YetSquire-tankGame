@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 public class GamePanel extends JPanel {
-	protected static ArrayList<Actor> actors;
-	protected static Tank tank;
+	protected ArrayList<Actor> actors;
+	protected Tank tank;
 
 	//change
 	private static int expX;
@@ -20,7 +20,7 @@ public class GamePanel extends JPanel {
 	private static boolean explosion; 
 	private boolean exit;
 	private Game parent;
-	protected static boolean altered;
+	protected boolean altered;
 	private Ellipse2D.Double radar;
 	private boolean growing;
 
@@ -32,6 +32,7 @@ public class GamePanel extends JPanel {
 		for (Actor s: actors)
 		{
 			s.update();
+			if (s.gone && !s.getFriendly()) enemyNum--;
 		}
 		actors.removeIf(s -> s.gone == true);
 
@@ -77,7 +78,7 @@ public class GamePanel extends JPanel {
 			int hp = r*3;
 			double f = Math.random();
 			double g = Math.random();
-			if (f > 0.5)
+			if (f > 0.75)
 			{
 				if (g < 0.25) {
 				x = (int) (Math.random() * Constants.panelWidth);
@@ -200,17 +201,12 @@ public class GamePanel extends JPanel {
 			}
 		});
 
-		addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent e)
-			{
-				if (e.getKeyCode() == 49)
-				{
-					growing = true;
-				}
-			}
-			public void keyTyped(KeyEvent e){};
-			public void keyReleased(KeyEvent e){};
-		});
+	}
+
+	public void callRadar()
+	{
+		radar.setFrame(actors.get(0).getX(), actors.get(0).getY(), radar.getWidth(), radar.getHeight());
+		growing = true;
 	}
 
 	@Override
@@ -219,8 +215,11 @@ public class GamePanel extends JPanel {
 		{
 		super.paintComponent(g1);
 		g1.setColor(Color.white);
-		if (growing) g1.fillOval((int)radar.getX(), (int)radar.getY(), (int)radar.getWidth(), (int)radar.getHeight());
-		//Not working
+		Graphics2D g2 = (Graphics2D) g1;
+		g2.setStroke(new BasicStroke(100));
+		if (growing) g2.drawOval((int)radar.getX(), (int)radar.getY(), (int)radar.getWidth(), (int)radar.getHeight());
+		g2.setStroke(new BasicStroke(3));
+		g1.setColor(Color.red);
 		for (Actor s : actors) {
 			s.draw(g1);
 		}
@@ -252,6 +251,8 @@ public class GamePanel extends JPanel {
 		enemyNum = 0;
 		altered = false;
 		exit = false;
+		radar.setFrame(0, 0, 0, 0);
+		growing = false;
 	}
 
 	public void setBindings()
@@ -264,19 +265,20 @@ public class GamePanel extends JPanel {
 		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("S"), "DOWN");
 		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("A"), "LEFT");
 		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("D"), "RIGHT");
-		//this.getInputMap().put(KeyStroke.getKeyStroke("Q"), "SHOOT");
-		this.getActionMap().put("UP", new MoveAction("UP", 1));
-		this.getActionMap().put("DOWN", new MoveAction("DOWN", 1));
-		this.getActionMap().put("LEFT", new MoveAction("LEFT", 1));
-		this.getActionMap().put("RIGHT", new MoveAction("RIGHT", 1));
-		this.getActionMap().put("ROTATE", new MoveAction("ROTATE", 1));
+		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("SPACE"), "RADAR");
+		this.getActionMap().put("UP", new MoveAction("UP", 1, this));
+		this.getActionMap().put("DOWN", new MoveAction("DOWN", 1, this));
+		this.getActionMap().put("LEFT", new MoveAction("LEFT", 1, this));
+		this.getActionMap().put("RIGHT", new MoveAction("RIGHT", 1, this));
+		this.getActionMap().put("ROTATE", new MoveAction("ROTATE", 1, this));
+		this.getActionMap().put("RADAR", new MoveAction("RADAR", 1, this));
 	}
 
 
 	public void radarGrowth()
 	{
-		radar.setFrame(actors.get(0).getX(), actors.get(0).getY(), radar.getWidth()+1, radar.getHeight()+1);
-		if (radar.getWidth() > Constants.panelWidth)
+		radar.setFrame(radar.getX()-5, radar.getY()-5, radar.getWidth()+10, radar.getHeight()+10);
+		if (radar.getWidth() > Constants.panelWidth + 100 && radar.getWidth() > Constants.panelHeight + 100)
 		{
 			radar.setFrame(0, 0, 0, 0);
 			growing = false;
@@ -290,43 +292,46 @@ public class GamePanel extends JPanel {
 class MoveAction extends AbstractAction {
 	private String direction;
 	private int player;
+	private GamePanel gp;
 
-	MoveAction(String direction, int player) {
+	MoveAction(String direction, int player, GamePanel gp) {
 
 		this.direction = direction;
 		this.player = player;
+		this.gp = gp;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		int xt = GamePanel.actors.get(0).getX();
-		int yt = GamePanel.actors.get(0).getY();
-		GamePanel.altered = true;
-		if (direction.equals("UP") && !((Tank)GamePanel.actors.get(0)).noUp) {
-			GamePanel.actors.get(0).y = (yt - Constants.tankSpeed);
-			if (((Tank)GamePanel.actors.get(0)).getHor())
-				((Tank)GamePanel.actors.get(0)).horz();
+		int xt = gp.actors.get(0).getX();
+		int yt = gp.actors.get(0).getY();
+		gp.altered = true;
+		if (direction.equals("UP") && !((Tank)gp.actors.get(0)).noUp) {
+			gp.actors.get(0).y = (yt - Constants.tankSpeed);
+			if (((Tank)gp.actors.get(0)).getHor())
+				((Tank)gp.actors.get(0)).horz();
 		}
-		if (direction.equals("DOWN") && !((Tank)GamePanel.actors.get(0)).noDown) {
-			GamePanel.actors.get(0).setY(yt + Constants.tankSpeed);
-			if (((Tank)GamePanel.actors.get(0)).getHor())
-				((Tank)GamePanel.actors.get(0)).horz();
+		if (direction.equals("DOWN") && !((Tank)gp.actors.get(0)).noDown) {
+			gp.actors.get(0).setY(yt + Constants.tankSpeed);
+			if (((Tank)gp.actors.get(0)).getHor())
+				((Tank)gp.actors.get(0)).horz();
 		}
-		if (direction.equals("LEFT") && !((Tank)GamePanel.actors.get(0)).noLeft) {
-			GamePanel.actors.get(0).setX(xt - Constants.tankSpeed);
-			if (!((Tank)GamePanel.actors.get(0)).getHor())
-				((Tank)GamePanel.actors.get(0)).horz();
+		if (direction.equals("LEFT") && !((Tank)gp.actors.get(0)).noLeft) {
+			gp.actors.get(0).setX(xt - Constants.tankSpeed);
+			if (!((Tank)gp.actors.get(0)).getHor())
+				((Tank)gp.actors.get(0)).horz();
 		}
-		if (direction.equals("RIGHT") && !((Tank)GamePanel.actors.get(0)).noRight) {
-			GamePanel.actors.get(0).setX(xt + Constants.tankSpeed);
-			if (!((Tank)GamePanel.actors.get(0)).getHor())
-				((Tank)GamePanel.actors.get(0)).horz();
+		if (direction.equals("RIGHT") && !((Tank)gp.actors.get(0)).noRight) {
+			gp.actors.get(0).setX(xt + Constants.tankSpeed);
+			if (!((Tank)gp.actors.get(0)).getHor())
+				((Tank)gp.actors.get(0)).horz();
 		}
 		if (direction.equals("ROTATE"))
-			GamePanel.actors.get(0).angle = (GamePanel.actors.get(0).angle + 0.1);
+			gp.actors.get(0).angle = (gp.actors.get(0).angle + 0.1);
+		if (direction.equals("RADAR"))
+			gp.callRadar();
 
-
-		GamePanel.altered = false;
+		gp.altered = false;
 		
 	}
 }

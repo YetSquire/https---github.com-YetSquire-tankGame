@@ -3,6 +3,7 @@ package src;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -42,11 +43,9 @@ public class Game implements Runnable{
 	private CardLayout card;
 	private Container c;
 	private Thread t;
-	private boolean running;
 
 	public Game() throws InterruptedException
 	{
-		running = false;
 		exit = false;
 		gp = new GamePanel(this);
 		JPanel panel = new JPanel();
@@ -64,8 +63,8 @@ public class Game implements Runnable{
 		String health = "Health: " + Constants.tankHP;
 		String score = "Score: " + Constants.score;
 		String hiScore = "High Score: " + Constants.hiScore;
-		String lives = "Lives: " + ((Tank) GamePanel.actors.get(0)).getLives();
-		t = new Thread(new ReloadThread(rechargeLabel));
+		String lives = "Lives: " + ((Tank) gp.actors.get(0)).getLives();
+		t = new Thread(new ReloadThread(rechargeLabel, gp));
 		healthLabel = new JLabel(health);
 		scoreLabel = new JLabel(score);
 		countLabel = new JLabel("", SwingConstants.CENTER);
@@ -92,7 +91,9 @@ public class Game implements Runnable{
 		frame.add(card2);
 		frame.add(card3);
         frame.pack();
-        frame.setSize(Constants.panelWidth, Constants.panelWidth);
+        //frame.setSize(Constants.panelWidth, Constants.panelWidth);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -126,11 +127,21 @@ public class Game implements Runnable{
 	
 	@Override
 	public void run() {
+    	long lastTime = System.nanoTime();
+    	final double amountOfTicks = 60D;
+    	double ns = 1_000_000_000 / amountOfTicks;
+    	double delta = 0;
+
 		while (!exit)
 		{
-			if (!((Tank)(GamePanel.actors.get(0))).getReload() && !t.isAlive())
+			long now = System.nanoTime();
+      delta += (now - lastTime) / ns;
+      lastTime = now;
+      // only update 60 times per second
+      if (delta >= 1) {
+        if (!((Tank)(gp.actors.get(0))).getReload() && !t.isAlive())
 			{
-				t = new Thread(new ReloadThread(rechargeLabel));
+				t = new Thread(new ReloadThread(rechargeLabel, gp));
 				t.start();
 			}
 			gp.repaint();
@@ -140,10 +151,13 @@ public class Game implements Runnable{
 			lifeLabel.setText(lives);
 			highLabel.setText(hiScore);
 			scoreLabel.setText("Score: " + Constants.score);
-			if (gp.checkExit()) exit = true;;
-		}
-		gp.update(healthLabel);
+			if (gp.checkExit()) exit = true;
+			gp.update(healthLabel);
 		gp.repaint();
+        delta--;
+		}
+      }
+
 
 		if (exit)
 		{
@@ -164,6 +178,7 @@ public class Game implements Runnable{
 	{
 		healthLabel.setText("Health: 0");//no idea why actual update doesn't work
 		gp.repaint();
+		gp.setBackground(new Color(0, 100, 50));
 		try {
 			TimeUnit.SECONDS.sleep(2);
 		} catch (InterruptedException e) {

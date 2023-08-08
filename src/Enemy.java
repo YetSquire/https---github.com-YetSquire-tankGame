@@ -19,7 +19,6 @@ public abstract class Enemy extends Actor{
         if (hp < 0) 
         {
             gone = true;
-            GamePanel.enemyNum--;
         }
         if (x >= Constants.panelWidth)
 			gone = true;

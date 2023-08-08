@@ -6,9 +6,11 @@ import javax.swing.JLabel;
 
 public class ReloadThread implements Runnable {
     JLabel rechargeLabel;
-	public ReloadThread(JLabel r)
+	GamePanel gp;
+	public ReloadThread(JLabel r, GamePanel gp)
 	{
 		rechargeLabel = r;
+		this.gp = gp;
 	}
 
     public void run()
@@ -33,6 +35,6 @@ public class ReloadThread implements Runnable {
 		//BROKEN RECHARGE
 			recharge = recharge.concat(block);
 			rechargeLabel.setText(recharge);
-			((Tank)(GamePanel.actors.get(0))).setReload(true);
+			((Tank)(gp.actors.get(0))).setReload(true);
 		}
 	}
