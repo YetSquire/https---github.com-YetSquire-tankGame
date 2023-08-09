@@ -10,8 +10,6 @@ import javax.swing.*;
 public class GamePanel extends JPanel {
 	protected ArrayList<Actor> actors;
 	protected Tank tank;
-
-	//change
 	private static int expX;
 	private static int expY;
 	public static int enemyNum;
@@ -43,7 +41,6 @@ public class GamePanel extends JPanel {
 			Point center = new Point(((Tank)actors.get(0)).x, ((Tank)actors.get(0)).y);
 			Point one = ((Tank)actors.get(0)).rotate(new Point(x1, y1), center);
 			actors.add(new Shell(one.x, one.y, actors.get(0).angle, Constants.shellHP, Constants.shellSpeed));
-			addShell = false;
 		}
 		if (addBomb)
 		{
@@ -140,7 +137,7 @@ public class GamePanel extends JPanel {
 			}
 			else
 			{
-				actors.add(new Square(r, hp, x, y, speed, rA));
+				actors.add(new Circle(r, hp, x, y, speed, rA));
 			}
 			enemyNum++;
 			altered = false;
@@ -183,6 +180,13 @@ public class GamePanel extends JPanel {
 		actors = new ArrayList<Actor>();
 		tank = new Tank(Constants.panelWidth/2, Constants.panelHeight/2, Math.toRadians(45), Constants.tankHP);
 		actors.add(tank);
+
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+2*Constants.panelHeight/4), 0.0, 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+3*Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+2*Constants.panelHeight/4), 0.0, 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+Constants.panelHeight/4), 0.0, 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+3*Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+Constants.panelHeight/4), 0.0, 1000, 200, 20));
+
+
 		setSize(Constants.panelHeight, Constants.panelWidth);
 		setBindings();
 		setFocusable(true);
@@ -197,6 +201,12 @@ public class GamePanel extends JPanel {
 				else if (me.getButton()==MouseEvent.BUTTON3)
 				{
 					if (((Tank)actors.get(0)).getReload()) addBomb = true;
+				}
+			}
+			public void mouseReleased(MouseEvent me) {
+				if (me.getButton()==MouseEvent.BUTTON1)
+				{
+					addShell = false;
 				}
 			}
 		});

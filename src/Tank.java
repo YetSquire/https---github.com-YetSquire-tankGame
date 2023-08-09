@@ -97,17 +97,6 @@ public class Tank extends Actor{
 		g.setColor(Color.black);
 		int length = Constants.tankHeight;
 		int width = Constants.tankWidth;
-		Point a = new Point(x - width/2, y - length/2);
-        Point b = new Point(x - width/2, y + length/2);
-        Point c = new Point(x + width/2, y + length/2);
-        Point d = new Point(x + width/2, y - length/2);
-        int[] xArr = {(int)(a.getX()), (int)(b.getX()), (int)(c.getX()), (int)(d.getX())};
-        int[] yArr = {(int)(a.getY()), (int)(b.getY()), (int)(c.getY()), (int)(d.getY())};
-
-        Polygon thisP = new Polygon(xArr, yArr, 4);
-        p = new Area(thisP);
-		g.draw(thisP);
-		g.fillOval((int) x-CircleR/2, (int) y-CircleR/2, CircleR, CircleR);
 
 		int cx = x;
 		int cy = y;
@@ -125,8 +114,8 @@ public class Tank extends Actor{
 		int y2 = (int) cy;
 		Point five = rotate(new Point(x2, y2 + 80), center);
 		Point six = rotate(new Point(x2, y2 - 80), center);
-		Point seven = rotate(new Point(cx-10, cy - 10), center);
-		Point eight = rotate(new Point(cx-10, cy + 10), center);
+		Point seven = rotate(new Point(cx+10, cy - 10), center);
+		Point eight = rotate(new Point(cx+10, cy + 10), center);
 
 		int[] x3Arr = { five.x, six.x, seven.x, eight.x };
 		int[] y3Arr = { five.y, six.y, seven.y, eight.y };
@@ -138,6 +127,18 @@ public class Tank extends Actor{
 
 		g.setColor(Color.black);
 		g.fillPolygon(anotherP);
+
+		Point a = new Point(x - width/2, y - length/2);
+        Point b = new Point(x - width/2, y + length/2);
+        Point c = new Point(x + width/2, y + length/2);
+        Point d = new Point(x + width/2, y - length/2);
+        int[] xArr = {(int)(a.getX()), (int)(b.getX()), (int)(c.getX()), (int)(d.getX())};
+        int[] yArr = {(int)(a.getY()), (int)(b.getY()), (int)(c.getY()), (int)(d.getY())};
+
+        Polygon thisP = new Polygon(xArr, yArr, 4);
+        p = new Area(thisP);
+		g.draw(thisP);
+		g.fillOval((int) x-CircleR/2, (int) y-CircleR/2, CircleR, CircleR);
     }
 
     public Point rotate(Point p, Point c) {

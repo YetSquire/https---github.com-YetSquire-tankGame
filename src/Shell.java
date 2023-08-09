@@ -37,7 +37,7 @@ public class Shell extends Actor{
 	
 	public void draw(Graphics g)
 	{
-		g.setColor(Color.black);
+		g.setColor(Color.blue);
 		Ellipse2D.Double ci = new Ellipse2D.Double(x, y, Constants.shellSize, Constants.shellSize);
 		p = new Area(ci);
 		g.fillOval(x, y, Constants.shellSize, Constants.shellSize);
