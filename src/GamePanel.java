@@ -63,6 +63,20 @@ public class GamePanel extends JPanel {
 			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
 			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
 			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
+			actors.add(new Shell(expX, expY, Math.random()*Math.PI*2, 100, Constants.shellSpeed));
 			explosion = false;
 		}
 		altered = false;
@@ -181,11 +195,15 @@ public class GamePanel extends JPanel {
 		actors = new ArrayList<Actor>();
 		tank = new Tank(Constants.panelWidth/2, Constants.panelHeight/2, Math.toRadians(45), Constants.tankHP);
 		actors.add(tank);
-
-		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+2*Constants.panelHeight/4), 0.0, 1000, 200, 20));
-		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+3*Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+2*Constants.panelHeight/4), 0.0, 1000, 200, 20));
-		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+Constants.panelHeight/4), 0.0, 1000, 200, 20));
-		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+3*Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+Constants.panelHeight/4), 0.0, 1000, 200, 20));
+		
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+2*Constants.panelHeight/4), 2*Math.PI*Math.random(), 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+3*Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+2*Constants.panelHeight/4), 2*Math.PI*Math.random(), 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+Constants.panelHeight/4), 2*Math.PI*Math.random(), 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+3*Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+Constants.panelHeight/4), 2*Math.PI*Math.random(), 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth)), (int)(Math.random()*(Constants.panelHeight)), 0.0, 1000, 400, 10));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth)), (int)(Math.random()*(Constants.panelHeight)), 0.0, 1000, 20, 200));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth)), (int)(Math.random()*(Constants.panelHeight)), 0.0, 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth)), (int)(Math.random()*(Constants.panelHeight)), 0.0, 1000, 200, 20));
 
 
 		setSize(Constants.panelHeight, Constants.panelWidth);
@@ -286,7 +304,10 @@ public class GamePanel extends JPanel {
 		this.getActionMap().put("RADAR", new MoveAction("RADAR", 1, this));
 	}
 
-
+	public boolean isGrowing()
+	{
+		return growing;
+	}
 	public void radarGrowth()
 	{
 		radar.setFrame(radar.getX()-5, radar.getY()-5, radar.getWidth()+10, radar.getHeight()+10);

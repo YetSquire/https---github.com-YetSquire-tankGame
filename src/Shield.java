@@ -27,12 +27,30 @@ public class Shield extends Actor{
         else notCorner();
     }
 
+    public Point rotate(Point p, Point c) {
+		int x1 = p.x;
+		int y1 = p.y;
+		int cx = c.x;
+		int cy = c.y;
+		int dx = x1 - cx;
+		int dy = y1 - cy;
+		x1 = cx + (int) (dx * Math.cos(angle) - dy * Math.sin(angle));
+		y1 = cy + (int) (dx * Math.sin(angle) + dy * Math.cos(angle));
+		return new Point(x1, y1);
+
+	}
+
     private void isCorner()
     {
+        Point center = new Point(x + width/2, y + length/2);
         Point a = new Point(x + width, y);
         Point b = new Point(x + width, y + length);
         Point c = new Point(x, y + length);
         Point d = new Point(x, y);
+        a = rotate(a, center);
+        b = rotate(b, center);
+        c = rotate(c, center);
+        d = rotate(d, center);
         int[] xArr = {(int)(a.getX()), (int)(b.getX()), (int)(c.getX()), (int)(d.getX())};
         int[] yArr = {(int)(a.getY()), (int)(b.getY()), (int)(c.getY()), (int)(d.getY())};
 
@@ -43,6 +61,10 @@ public class Shield extends Actor{
         b = new Point(x + length, y + width);
         c = new Point(x, y + width);
         d = new Point(x, y);
+        a = rotate(a, center);
+        b = rotate(b, center);
+        c = rotate(c, center);
+        d = rotate(d, center);
         int[] x2Arr = {(int)(a.getX()), (int)(b.getX()), (int)(c.getX()), (int)(d.getX())};
         int[] y2Arr = {(int)(a.getY()), (int)(b.getY()), (int)(c.getY()), (int)(d.getY())};
 
@@ -53,10 +75,16 @@ public class Shield extends Actor{
 
     private void notCorner()
     {
+        Point center = new Point(x + width/2, y + length/2);
         Point a = new Point(x + width, y);
         Point b = new Point(x + width, y + length);
         Point c = new Point(x, y + length);
         Point d = new Point(x, y);
+
+        a = rotate(a, center);
+        b = rotate(b, center);
+        c = rotate(c, center);
+        d = rotate(d, center);
         int[] xArr = {(int)(a.getX()), (int)(b.getX()), (int)(c.getX()), (int)(d.getX())};
         int[] yArr = {(int)(a.getY()), (int)(b.getY()), (int)(c.getY()), (int)(d.getY())};
 
@@ -85,5 +113,6 @@ public class Shield extends Actor{
     public int getOGHP() {
         return ogHP;
     }
+
     
 }
