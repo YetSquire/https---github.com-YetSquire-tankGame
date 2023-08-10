@@ -34,8 +34,9 @@ public class GamePanel extends JPanel {
 		}
 		actors.removeIf(s -> s.gone == true);
 
-		if (addShell)
+		if (addShell && ((Tank)(actors.get(0))).hasGun())
 		{
+			((Tank)(actors.get(0))).overheat();
 			int x1 = (((Tank)actors.get(0)).x - Constants.barrel);
 			int y1 = (actors.get(0).getY());
 			Point center = new Point(((Tank)actors.get(0)).x, ((Tank)actors.get(0)).y);
@@ -194,9 +195,10 @@ public class GamePanel extends JPanel {
 		setBackground(new Color(0, 100, 50));
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent me) {
-				if (me.getButton()==MouseEvent.BUTTON1)
+				if (me.getButton()==MouseEvent.BUTTON1 && ((Tank)(actors.get(0))).hasGun())
 				{
 					addShell = true;
+
 				}
 				else if (me.getButton()==MouseEvent.BUTTON3)
 				{

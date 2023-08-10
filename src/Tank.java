@@ -3,9 +3,10 @@ package src;
 
 import java.awt.*;
 import java.awt.geom.Area;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Tank extends Actor{
-	// going to make tanks, turn off static and pass tank object to moveaction
 	private double cenX;
 	private double cenY;
 	private int CircleR;
@@ -16,6 +17,9 @@ public class Tank extends Actor{
 	public boolean noUp;
 	public boolean noDown;
 	private boolean reloaded;
+	private int overheating;
+	private boolean gunDisabled;
+	private Timer gun;
 
     public Tank(int x, int y, double angle, int hp)
     {
@@ -38,6 +42,8 @@ public class Tank extends Actor{
 
         Polygon thisP = new Polygon(xArr, yArr, 4);
         p = new Area(thisP);
+
+		gun = new Timer();
     }
     public void horz()
 	{
@@ -125,19 +131,54 @@ public class Tank extends Actor{
 		g.setColor(Color.white);
 		g.fillPolygon(shadow);
 
-		g.setColor(Color.black);
-		g.fillPolygon(anotherP);
+		if (overheating>=51)
+		{
+			if (!gunDisabled)
+			{
+				gun.schedule(new TimerTask() {
 
+			public void run() {
+				gunDisabled = false;
+				overheating = 0;
+				if (overheating < 0) overheating = 0;
+				else if (overheating >= 51) overheating = 51;
+			}
+		}, 3000);
+				gunDisabled = true;
+			}
+			overheating = 51;
+		}
+		else if (overheating > 0)
+		{
+			if (!gunDisabled)
+			{
+				gun.schedule(new TimerTask() {
+
+			public void run() {
+				overheating -= 1;
+				if (overheating < 0) overheating = 0;
+				else if (overheating >= 51) overheating = 51;
+			}
+		}, 10);
+			}
+		}
+		if (overheating < 0) overheating = 0;
+		else if (overheating >= 51) overheating = 51;
+		g.setColor(new Color(overheating*5, 0, 0));
+		g.fillPolygon(anotherP);
+		g.setColor(Color.black);
 		Point a = new Point(x - width/2, y - length/2);
         Point b = new Point(x - width/2, y + length/2);
         Point c = new Point(x + width/2, y + length/2);
         Point d = new Point(x + width/2, y - length/2);
         int[] xArr = {(int)(a.getX()), (int)(b.getX()), (int)(c.getX()), (int)(d.getX())};
         int[] yArr = {(int)(a.getY()), (int)(b.getY()), (int)(c.getY()), (int)(d.getY())};
+		
 
         Polygon thisP = new Polygon(xArr, yArr, 4);
         p = new Area(thisP);
 		g.draw(thisP);
+
 		g.fillOval((int) x-CircleR/2, (int) y-CircleR/2, CircleR, CircleR);
     }
 
@@ -193,4 +234,15 @@ public class Tank extends Actor{
 	{
 		return Constants.tankHP;
 	}
+
+	public boolean hasGun()
+	{
+		return !gunDisabled;
+	}
+
+	public void overheat()
+	{
+		overheating++;
+	}
+
 }
