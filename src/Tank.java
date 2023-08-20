@@ -17,9 +17,15 @@ public class Tank extends Actor{
 	public boolean noUp;
 	public boolean noDown;
 	private boolean reloaded;
-	private int overheating;
+	private double overheating;
 	private boolean gunDisabled;
 	private Timer gun;
+	// private Shield topLeft;
+	// private Shield topRight;
+	// private Shield botLeft;
+	// private Shield botRight;
+	//I'll work on the shields when I have time
+
 
     public Tank(int x, int y, double angle, int hp)
     {
@@ -44,6 +50,11 @@ public class Tank extends Actor{
         p = new Area(thisP);
 
 		gun = new Timer();
+
+		// topLeft = new Shield(x, y, Math.PI*1/4, 1000, 70, 10, false);
+		// topRight = new Shield(x+width, y, Math.PI*3/4, 1000, 70, 10, false);
+		// botLeft = new Shield(x, y+length, Math.PI*-1/4, 1000, 70, 10, false);
+		// botRight = new Shield(x+width, y+length, Math.PI*-3/4, 1000, 70, 10, false);
     }
     public void horz()
 	{
@@ -95,6 +106,12 @@ public class Tank extends Actor{
 			noUp = true;
 			y = 1 - Constants.tankHeight/2;
 		}
+
+		// topLeft.update();
+		// topRight.update();
+		// botLeft.update();
+		// botRight.update();
+
     }
 
     public void draw(Graphics g1)
@@ -159,12 +176,12 @@ public class Tank extends Actor{
 				if (overheating < 0) overheating = 0;
 				else if (overheating >= 51) overheating = 51;
 			}
-		}, 10);
+		}, 1);
 			}
 		}
 		if (overheating < 0) overheating = 0;
 		else if (overheating >= 51) overheating = 51;
-		g.setColor(new Color(overheating*5, 0, 0));
+		g.setColor(new Color((int)overheating*5, 0, 0));
 		g.fillPolygon(anotherP);
 		g.setColor(Color.black);
 		Point a = new Point(x - width/2, y - length/2);
@@ -180,6 +197,11 @@ public class Tank extends Actor{
 		g.draw(thisP);
 
 		g.fillOval((int) x-CircleR/2, (int) y-CircleR/2, CircleR, CircleR);
+
+		// topLeft.draw(g);
+		// topRight.draw(g);
+		// botLeft.draw(g);
+		// botRight.draw(g);
     }
 
     public Point rotate(Point p, Point c) {
@@ -242,7 +264,7 @@ public class Tank extends Actor{
 
 	public void overheat()
 	{
-		overheating++;
+		overheating+=1.2;
 	}
 
 }

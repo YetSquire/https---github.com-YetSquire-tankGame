@@ -27,6 +27,19 @@ public class Shield extends Actor{
         else notCorner();
     }
 
+    public Shield(int x, int y, double angle, int hp, int length, int width, boolean corner)
+    {
+        super(x, y, angle, hp, -1);
+        this.width = width;
+        this.length = length;
+        ogHP = hp;
+        this.corner = corner;
+        friendly = true;
+
+        if (corner) isCorner();
+        else notCorner();
+    }
+
     public Point rotate(Point p, Point c) {
 		int x1 = p.x;
 		int y1 = p.y;
@@ -108,6 +121,11 @@ public class Shield extends Actor{
             g.fillPolygon(holdCorner);
             g.fillPolygon(holder);
         }
+    }
+
+    public void relocate(int x, int y)
+    {
+
     }
 
     public int getOGHP() {

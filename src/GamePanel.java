@@ -276,6 +276,14 @@ public class GamePanel extends JPanel {
 		tank = new Tank(Constants.panelWidth/2, Constants.panelHeight/2, Math.toRadians(45), Constants.tankHP);
 		tank.setLives(lives);
 		actors.add(tank);
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+2*Constants.panelHeight/4), 2*Math.PI*Math.random(), 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+3*Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+2*Constants.panelHeight/4), 2*Math.PI*Math.random(), 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+Constants.panelHeight/4), 2*Math.PI*Math.random(), 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth*0.25)+3*Constants.panelWidth/4), (int)(Math.random()*(Constants.panelHeight*0.25)+Constants.panelHeight/4), 2*Math.PI*Math.random(), 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth)), (int)(Math.random()*(Constants.panelHeight)), 0.0, 1000, 400, 10));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth)), (int)(Math.random()*(Constants.panelHeight)), 0.0, 1000, 20, 200));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth)), (int)(Math.random()*(Constants.panelHeight)), 0.0, 1000, 200, 20));
+		actors.add(new Shield((int)(Math.random()*(Constants.panelWidth)), (int)(Math.random()*(Constants.panelHeight)), 0.0, 1000, 200, 20));
 		addShell = false;
 		addBomb = false;
 		enemyNum = 0;
